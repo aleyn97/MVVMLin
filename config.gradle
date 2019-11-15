@@ -7,7 +7,7 @@ ext {
             minSdkVersion    : 19,
             targetSdkVersion : 28,
             versionCode      : 1,
-            versionName      : "1.0",
+            versionName      : "1.0.0",
     ]
     //version配置
     versions = [
@@ -39,7 +39,6 @@ ext {
 
     //network
     retrofit = [
-            //"okhttp"        : "com.squareup.okhttp3:okhttp:3.10.0",
             retrofit             : "com.squareup.retrofit2:retrofit:2.6.0",
             "converter-gson"     : "com.squareup.retrofit2:converter-gson:2.6.0",
     ]

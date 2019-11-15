@@ -44,6 +44,7 @@ dependencies {
 }
 
 publish {
+    repoName = 'aleyn'
     userOrg = 'aleyn'
     groupId = 'me.aleyn'
     artifactId = 'MVVMLin'

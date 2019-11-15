@@ -100,9 +100,7 @@ abstract class BaseFragment<VM : BaseViewModel, DB : ViewDataBinding> : Fragment
         })
     }
 
-    open fun handleEvent(msg: Message) {
-
-    }
+    open fun handleEvent(msg: Message) {}
 
     /**
      * 打开等待框

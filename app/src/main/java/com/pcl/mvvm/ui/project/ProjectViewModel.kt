@@ -39,7 +39,7 @@ class ProjectViewModel : BaseViewModel() {
             it.forEach { item ->
                 navTitle.add(item.name)
             }
-        })
+        }, isShowDialog = false)
     }
 
     fun getProjectList(cid: Int) {

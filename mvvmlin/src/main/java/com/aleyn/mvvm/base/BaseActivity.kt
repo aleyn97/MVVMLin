@@ -1,7 +1,6 @@
 package com.aleyn.mvvm.base
 
 import android.os.Bundle
-import android.os.PersistableBundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
@@ -11,7 +10,7 @@ import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.customview.customView
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.aleyn.mvvm.R
-import com.blankj.utilcode.util.LogUtils
+import com.aleyn.mvvm.event.Message
 import com.blankj.utilcode.util.ToastUtils
 import java.lang.reflect.ParameterizedType
 
@@ -68,7 +67,12 @@ abstract class BaseActivity<VM : BaseViewModel, DB : ViewDataBinding> : AppCompa
         viewModel.defUI.toastEvent.observe(this, Observer {
             ToastUtils.showShort(it)
         })
+        viewModel.defUI.msgEvent.observe(this, Observer {
+            handleEvent(it)
+        })
     }
+
+    open fun handleEvent(msg: Message) {}
 
     /**
      * 打开等待框
