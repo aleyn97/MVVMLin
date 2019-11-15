@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?><!--如果有点击事件，则内部的水波纹不能扩散-->
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    <TextView
+            android:id="@+id/tv_project_list_atticle_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:background="?selectableItemBackgroundBorderless"
+            android:paddingStart="@dimen/dp_7"
+            android:paddingTop="@dimen/dp_2"
+            android:paddingEnd="@dimen/dp_7"
+            android:paddingBottom="@dimen/dp_2"
+            android:textSize="@dimen/sp_13"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="技术博客" />
+
+    <ImageView
+            android:id="@+id/iv_project_list_atticle_ic"
+            android:layout_width="@dimen/dp_60"
+            android:layout_height="@dimen/dp_80"
+            android:layout_marginStart="@dimen/dp_10"
+            android:scaleType="centerCrop"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_project_list_atticle_type"
+            tools:ignore="ContentDescription" />
+
+    <TextView
+            android:id="@+id/tv_project_list_atticle_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_10"
+            android:layout_marginTop="@dimen/dp_10"
+            android:ellipsize="end"
+            android:lineSpacingExtra="@dimen/dp_4"
+            android:maxLines="2"
+            android:textSize="@dimen/sp_14"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/iv_project_list_atticle_ic"
+            app:layout_constraintTop_toTopOf="@+id/iv_project_list_atticle_ic"
+            tools:text="玩安卓" />
+
+
+    <TextView
+            android:id="@+id/tv_project_list_atticle_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_13"
+            android:textSize="@dimen/sp_12"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/tv_project_list_atticle_title"
+            app:layout_constraintTop_toBottomOf="@+id/tv_project_list_atticle_title"
+            tools:text="2010-10-10" />
+
+    <TextView
+            android:id="@+id/tv_project_list_atticle_auther"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/sp_12"
+            app:layout_constraintStart_toEndOf="@+id/tv_project_list_atticle_time"
+            app:layout_constraintTop_toTopOf="@+id/tv_project_list_atticle_time"
+            tools:text="auther" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

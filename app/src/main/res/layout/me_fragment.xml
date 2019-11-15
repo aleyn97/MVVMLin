@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+            android:id="@+id/main"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+        <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@color/colorPrimary"
+                app:title="网站"
+                app:titleTextColor="@color/white" />
+
+        <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_me_uesd_web"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/gary" />
+    </LinearLayout>
+</layout>
