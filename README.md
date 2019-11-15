@@ -3,7 +3,7 @@
 项目地址：[MVVMLin](https://github.com/AleynP/MVVMLin)
 
 Github上关于MVVM的框架也不少，之前一直在用RxJava +Retrofit 用MVP模式来做项目，现在AndroidX 是大势所趋，Kotlin已经成官方语言两年了，今年GoogleIO大会又出了新东西，哎~~~~学不动了呀。近期项目不太忙，把这几个新东西结合起来，封装了一个MVVM的框架，分享出来给大家献丑了。
-**用Kotlin+Retrofit+ViewModel+LiveData+DataDinding+协程**来封装的一个快速开发框架，抛弃了强大的RxJava，心里还是有点虚的。
+抛弃了强大的RxJava，心里还是有点虚的。
 ### 框架简介
  - **使用技术**
  基于MVVM模式用了 kotlin+协程+retrofit+livedata+DataBinding
