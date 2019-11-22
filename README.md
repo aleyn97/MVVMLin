@@ -29,7 +29,7 @@ dataBinding {
 ```
 dependencies {
     ...
-   implementation 'me.aleyn:MVVMLin:1.0'
+   implementation 'me.aleyn:MVVMLin:1.0.1'
 }
 ```
 或者 下载到本地导入Module
