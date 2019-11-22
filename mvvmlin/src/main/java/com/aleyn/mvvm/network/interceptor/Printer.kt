@@ -1,71 +1,46 @@
-/*
- * Copyright 2018 JessYan
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.aleyn.mvvm.network.interceptor
 
-import android.text.TextUtils
-
-import org.json.JSONArray
-import org.json.JSONException
-import org.json.JSONObject
-
-import java.io.IOException
-
+import com.blankj.utilcode.util.JsonUtils
 import okhttp3.FormBody
 import okhttp3.Request
-import okhttp3.internal.platform.Platform
 import okio.Buffer
+import java.io.IOException
 
 /**
- * ================================================
- * 对 OkHttp 的请求和响应信息进行更规范和清晰的打印, 此类为框架默认实现, 以默认格式打印信息, 若觉得默认打印格式
- * 并不能满足自己的需求, 可自行扩展自己理想的打印格式
+ * 借鉴其他Demo里的日志打印 类
+ * 当日志比较多时，有时候会出现输出不全的情况
  */
 object Printer {
-    private val JSON_INDENT = 3
     private val LINE_SEPARATOR = System.getProperty("line.separator")
     private val DOUBLE_SEPARATOR = LINE_SEPARATOR!! + LINE_SEPARATOR
 
     private val OMITTED_RESPONSE = arrayOf(LINE_SEPARATOR, "Omitted response body")
     private val OMITTED_REQUEST = arrayOf(LINE_SEPARATOR, "Omitted request body")
 
-    private val N = "\n"
-    private val T = "\t"
-    private val REQUEST_UP_LINE =
+    private const val N = "\n"
+    private const val T = "\t"
+    private const val REQUEST_UP_LINE =
         "┌────── Request ────────────────────────────────────────────────────────────────────────"
-    private val END_LINE =
+    private const val END_LINE =
         "└───────────────────────────────────────────────────────────────────────────────────────"
-    private val RESPONSE_UP_LINE =
+    private const val RESPONSE_UP_LINE =
         "┌────── Response ───────────────────────────────────────────────────────────────────────"
-    private val BODY_TAG = "Body:"
-    private val URL_TAG = "URL: "
-    private val METHOD_TAG = "Method: @"
-    private val HEADERS_TAG = "Headers:"
-    private val STATUS_CODE_TAG = "Status Code: "
-    private val RECEIVED_TAG = "Received in: "
-    private val CORNER_UP = "┌ "
-    private val CORNER_BOTTOM = "└ "
-    private val CENTER_LINE = "├ "
-    private val DEFAULT_LINE = "│ "
+    private const val BODY_TAG = "Body:"
+    private const val URL_TAG = "URL: "
+    private const val METHOD_TAG = "Method: @"
+    private const val HEADERS_TAG = "Headers:"
+    private const val STATUS_CODE_TAG = "Status Code: "
+    private const val RECEIVED_TAG = "Received in: "
+    private const val CORNER_UP = "┌ "
+    private const val CORNER_BOTTOM = "└ "
+    private const val CENTER_LINE = "├ "
+    private const val DEFAULT_LINE = "│ "
 
-    private fun isEmpty(line: String): Boolean {
-        return TextUtils.isEmpty(line) || N == line || T == line || TextUtils.isEmpty(line.trim { it <= ' ' })
-    }
+    private fun isEmpty(line: String) =
+        line.isEmpty() || N == line || T == line || line.trim().isEmpty()
 
     internal fun printJsonRequest(builder: LoggingInterceptor, request: Request) {
-        val requestBody = LINE_SEPARATOR + BODY_TAG + LINE_SEPARATOR + bodyToString(request)
+        val requestBody = LINE_SEPARATOR!! + BODY_TAG + LINE_SEPARATOR + bodyToString(request)
         val tag = builder.requestTag
         if (builder.logger == null)
             log(builder.type, tag, REQUEST_UP_LINE)
@@ -100,7 +75,7 @@ object Printer {
         code: Int, headers: String, bodyString: String, segments: List<String>
     ) {
         val responseBody =
-            LINE_SEPARATOR + BODY_TAG + LINE_SEPARATOR + getJsonString(bodyString)
+            LINE_SEPARATOR!! + BODY_TAG + LINE_SEPARATOR + JsonUtils.formatJson(bodyString)
         val tag = builder.responseTag
         if (builder.logger == null)
             log(builder.type, tag, RESPONSE_UP_LINE)
@@ -172,10 +147,11 @@ object Printer {
         val header = request.headers().toString()
         val loggableHeader = level == Level.HEADERS || level == Level.BASIC
         message = METHOD_TAG + request.method() + DOUBLE_SEPARATOR +
-                if (isEmpty(header)) "" else if (loggableHeader) HEADERS_TAG + LINE_SEPARATOR + dotHeaders(
-                    header
-                ) else ""
-        return message.split(LINE_SEPARATOR.toRegex()).dropLastWhile { it.isEmpty() }
+                when {
+                    loggableHeader -> "${HEADERS_TAG}${LINE_SEPARATOR}${dotHeaders(header)}"
+                    else -> ""
+                }
+        return message.split(LINE_SEPARATOR!!.toRegex()).dropLastWhile { it.isEmpty() }
             .toTypedArray()
     }
 
@@ -187,16 +163,11 @@ object Printer {
         val loggableHeader = level == Level.HEADERS || level == Level.BASIC
         val segmentString = slashSegments(segments)
         message =
-            ((if (!TextUtils.isEmpty(segmentString)) "$segmentString - " else "") + "is success : "
-                    + isSuccessful + " - " + RECEIVED_TAG + tookMs + "ms" + DOUBLE_SEPARATOR + STATUS_CODE_TAG +
-                    code + DOUBLE_SEPARATOR + if (isEmpty(header))
-                ""
-            else if (loggableHeader)
-                HEADERS_TAG + LINE_SEPARATOR +
-                        dotHeaders(header)
-            else
-                "")
-        return message.split(LINE_SEPARATOR.toRegex()).dropLastWhile { it.isEmpty() }
+            "${if (segmentString.isNotEmpty()) "$segmentString - " else ""}is success : $isSuccessful - $RECEIVED_TAG$tookMs ms $DOUBLE_SEPARATOR $STATUS_CODE_TAG " +
+                    "$code $DOUBLE_SEPARATOR ${if (loggableHeader) HEADERS_TAG + LINE_SEPARATOR + dotHeaders(
+                        header
+                    ) else ""}"
+        return message.split(LINE_SEPARATOR!!.toRegex()).dropLastWhile { it.isEmpty() }
             .toTypedArray()
     }
 
@@ -209,18 +180,17 @@ object Printer {
     }
 
     private fun dotHeaders(header: String): String {
+        if (isEmpty(header)) return ""
         val headers =
-            header.split(LINE_SEPARATOR.toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+            header.split(LINE_SEPARATOR!!.toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
         val builder = StringBuilder()
         var tag = "─ "
         if (headers.size > 1) {
             for (i in headers.indices) {
-                if (i == 0) {
-                    tag = CORNER_UP
-                } else if (i == headers.size - 1) {
-                    tag = CORNER_BOTTOM
-                } else {
-                    tag = CENTER_LINE
+                tag = when (i) {
+                    0 -> CORNER_UP
+                    headers.size - 1 -> CORNER_BOTTOM
+                    else -> CENTER_LINE
                 }
                 builder.append(tag).append(headers[i]).append("\n")
             }
@@ -241,10 +211,10 @@ object Printer {
     ) {
         for (line in lines) {
             val lineLength = line.length
-            val MAX_LONG_SIZE = if (withLineSize) 110 else lineLength
-            for (i in 0..lineLength / MAX_LONG_SIZE) {
-                val start = i * MAX_LONG_SIZE
-                var end = (i + 1) * MAX_LONG_SIZE
+            val maxSize = if (withLineSize) 110 else lineLength
+            for (i in 0..lineLength / maxSize) {
+                val start = i * maxSize
+                var end = (i + 1) * maxSize
                 end = if (end > line.length) line.length else end
                 if (logger == null) {
                     log(type, tag, DEFAULT_LINE + line.substring(start, end))
@@ -262,38 +232,14 @@ object Printer {
             if (copy.body() == null)
                 return ""
             copy.body()!!.writeTo(buffer)
-            return getJsonString(buffer.readUtf8())
+            return JsonUtils.formatJson(buffer.readUtf8())
         } catch (e: IOException) {
-            return "{\"err\": \"" + e.message + "\"}"
+            return "{\"err\": \"${e.message}\"}"
         }
 
     }
 
-    internal fun getJsonString(msg: String): String {
-        var message: String
-        try {
-            if (msg.startsWith("{")) {
-                val jsonObject = JSONObject(msg)
-                message = jsonObject.toString(JSON_INDENT)
-            } else if (msg.startsWith("[")) {
-                val jsonArray = JSONArray(msg)
-                message = jsonArray.toString(JSON_INDENT)
-            } else {
-                message = msg
-            }
-        } catch (e: JSONException) {
-            message = msg
-        }
-
-        return message
+    private fun log(type: Int, tag: String, msg: String) {
+        LoggingInterceptor.Logger.DEFAULT.log(type, tag, msg)
     }
-
-    internal fun log(type: Int, tag: String, msg: String) {
-        val logger = java.util.logging.Logger.getLogger(tag)
-        when (type) {
-            Platform.INFO -> logger.log(java.util.logging.Level.INFO, msg)
-            else -> logger.log(java.util.logging.Level.WARNING, msg)
-        }
-    }
-
 }

@@ -2,7 +2,6 @@ package com.pcl.mvvm.ui.home
 
 import androidx.lifecycle.MutableLiveData
 import com.aleyn.mvvm.base.BaseViewModel
-import com.pcl.mvvm.data.HomeRepository
 import com.pcl.mvvm.network.entity.BannerBean
 import com.pcl.mvvm.network.entity.HomeListBean
 import com.pcl.mvvm.utils.InjectorUtil
@@ -26,5 +25,4 @@ class HomeViewModel : BaseViewModel() {
             projectData.value = it
         })
     }
-
 }

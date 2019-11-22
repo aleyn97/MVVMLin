@@ -7,8 +7,14 @@ import com.aleyn.mvvm.event.Message
 import com.aleyn.mvvm.event.SingleLiveEvent
 import com.aleyn.mvvm.network.ExceptionHandle
 import com.aleyn.mvvm.network.ResponseThrowable
+import com.blankj.utilcode.util.LogUtils
 import com.blankj.utilcode.util.Utils
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.flowOn
+import kotlin.system.measureTimeMillis
 
 /**
  *   @auther : Aleyn
@@ -27,9 +33,18 @@ open class BaseViewModel : AndroidViewModel(Utils.getApp()), LifecycleObserver {
     }
 
     /**
+     * 用流的方式进行网络请求
+     */
+    fun <T> launchFlow(block: suspend () -> T): Flow<T> {
+        return flow {
+            emit(block())
+        }
+    }
+
+    /**
      *  不过滤请求结果
      * @param block 请求体
-     * @param errorCall 失败回调
+     * @param error 失败回调
      * @param complete  完成回调（无论成功失败都会调用）
      * @param isShowDialog 是否显示加载框
      */

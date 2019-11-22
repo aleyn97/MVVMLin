@@ -1,38 +1,25 @@
-/*
- * Copyright 2017 JessYan
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.aleyn.mvvm.network.interceptor
 
-
+import com.blankj.utilcode.util.JsonUtils
 import okhttp3.*
 import okhttp3.internal.platform.Platform
+import okhttp3.internal.platform.Platform.INFO
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 /**
- *
+ * 借鉴其他Demo里的日志打印
+ * #当日志比较多时，有时候会出现输出不全的情况
  */
 class LoggingInterceptor : Interceptor {
 
-    var TAG: String = "Logging"
+    private var tag: String = "HttpLogging"
     var isDebug: Boolean = false
-    var type = Platform.INFO
-    var requestTag: String = TAG
-    var responseTag: String = TAG
+    var type = INFO
+    var requestTag: String = tag
+    var responseTag: String = tag
     var level = Level.BASIC
-    val headers = Headers.Builder()
+    private val headers = Headers.Builder()
     var logger: Logger? = null
 
 
@@ -92,7 +79,6 @@ class LoggingInterceptor : Interceptor {
         val st = System.nanoTime()
         val response = chain.proceed(request)
 
-//        val segmentList = (request.tag() as Request).url().encodedPathSegments()
         val segmentList = request.url().encodedPathSegments()
         val chainMs = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - st)
         val header = response.headers().toString()
@@ -114,7 +100,7 @@ class LoggingInterceptor : Interceptor {
                     || subtype.contains("html"))
         ) {
             val bodyString = responseBody.string()
-            val bodyJson = Printer.getJsonString(bodyString)
+            val bodyJson = JsonUtils.formatJson(bodyString)
             Printer.printJsonResponse(
                 this,
                 chainMs,
@@ -132,5 +118,5 @@ class LoggingInterceptor : Interceptor {
         return response.newBuilder().body(body).build()
     }
 
-    fun getHeaders(): Headers = headers.build()
+    private fun getHeaders(): Headers = headers.build()
 }

@@ -1,9 +1,5 @@
 package com.aleyn.mvvm.network.interceptor;
 
-/**
- * @author ihsan on 21/02/2017.
- */
-
 public enum Level {
     /**
      * No logs.

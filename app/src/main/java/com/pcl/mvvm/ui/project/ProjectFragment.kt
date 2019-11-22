@@ -9,6 +9,8 @@ import com.pcl.mvvm.R
 import com.pcl.mvvm.databinding.ProjectFragmentBinding
 import com.pcl.mvvm.network.entity.ArticlesBean
 import com.pcl.mvvm.ui.detail.DetailActivity
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 
 class ProjectFragment : BaseFragment<ProjectViewModel, ProjectFragmentBinding>() {
 
@@ -23,16 +25,10 @@ class ProjectFragment : BaseFragment<ProjectViewModel, ProjectFragmentBinding>()
         mBinding?.viewModel = viewModel
     }
 
+    @FlowPreview
+    @ExperimentalCoroutinesApi
     override fun lazyLoadData() {
-        viewModel.getProjectType()
-        viewModel.getProjectList(294)
-        viewModel.defUI.msgEvent.observe(viewLifecycleOwner, Observer {
-            val msg = it
-            when (msg.code) {
-                0 -> {
-                }
-            }
-        })
+        viewModel.getFirstData()
     }
 
     override fun handleEvent(msg: Message) {
