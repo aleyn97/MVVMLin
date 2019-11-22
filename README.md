@@ -34,7 +34,7 @@ dependencies {
 ```
 或者 下载到本地导入Module
 #### 1.3 配置依赖版本文件 config.gradle
-复制Demo的 config,gradle 到要目录，在项目的build.gradle 中加入：
+复制Demo的 config,gradle 到根目录，在项目的build.gradle 中加入：(远程依赖可以忽略)
 ```
 apply from: "config.gradle"
 ```
@@ -159,6 +159,35 @@ class MeViewModel : BaseViewModel() {
  }
 ```
 isShowDialog 传false，默认是true
+
+用Flow流的方式：
+```
+fun getFirstData() {
+        launchUI {
+            launchFlow { homeRepository.getNaviJson() }
+                .flatMapConcat {
+                    return@flatMapConcat if (it.isSuccess()) {
+                        navData.addAll(it.data)
+                        it.data.forEach { item -> navTitle.add(item.name) }
+                        launchFlow { homeRepository.getProjectList(page, it.data[0].id) }
+                    } else throw ResponseThrowable(it.errorCode, it.errorMsg)
+                }
+                .onStart { defUI.showDialog.postValue(null) }
+                .flowOn(Dispatchers.IO)
+                .onCompletion { defUI.dismissDialog.call() }
+                .catch {
+                    // 错误处理
+                    val err = ExceptionHandle.handleException(it)
+                    LogUtils.d("${err.code}: ${err.errMsg}")
+                }
+                .collect {
+                    if (it.isSuccess()) items.addAll(it.data.datas)
+                }
+        }
+
+    }
+```
+
 ### 3，例子
 Demo中只展示了三种列表使用方式
 ##### 3.1 不使用Databinging,结合[BRVAH](https://github.com/CymChad/BaseRecyclerViewAdapterHelper)
