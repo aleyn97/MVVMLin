@@ -29,6 +29,7 @@ abstract class BaseActivity<VM : BaseViewModel, DB : ViewDataBinding> : AppCompa
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initViewDataBinding()
+        lifecycle.addObserver(viewModel)
         //注册 UI事件
         registorDefUIChange()
         initView(savedInstanceState)
