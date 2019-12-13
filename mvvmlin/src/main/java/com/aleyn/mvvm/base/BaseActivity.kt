@@ -29,6 +29,7 @@ abstract class BaseActivity<VM : BaseViewModel, DB : ViewDataBinding> : AppCompa
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initViewDataBinding()
+        lifecycle.addObserver(viewModel)
         //注册 UI事件
         registorDefUIChange()
         initView(savedInstanceState)
@@ -87,13 +88,14 @@ abstract class BaseActivity<VM : BaseViewModel, DB : ViewDataBinding> : AppCompa
                 .maxWidth(R.dimen.dialog_width)
         }
         dialog?.show()
+
     }
 
     /**
      * 关闭等待框
      */
     private fun dismissLoading() {
-        if (dialog!!.isShowing) dialog?.dismiss()
+        dialog?.run { if (isShowing) dismiss() }
     }
 
 

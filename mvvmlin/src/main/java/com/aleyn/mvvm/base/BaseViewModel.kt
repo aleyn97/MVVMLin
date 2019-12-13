@@ -50,7 +50,9 @@ open class BaseViewModel : AndroidViewModel(Utils.getApp()), LifecycleObserver {
      */
     fun launch(
         block: suspend CoroutineScope.() -> Unit,
-        error: suspend CoroutineScope.(ResponseThrowable) -> Unit = {},
+        error: suspend CoroutineScope.(ResponseThrowable) -> Unit = {
+            defUI.toastEvent.postValue("${it.code}:${it.errMsg}")
+        },
         complete: suspend CoroutineScope.() -> Unit = {},
         isShowDialog: Boolean = true
     ) {
@@ -62,8 +64,7 @@ open class BaseViewModel : AndroidViewModel(Utils.getApp()), LifecycleObserver {
                 {
                     defUI.dismissDialog.call()
                     complete()
-                },
-                true
+                }
             )
         }
     }
@@ -79,7 +80,9 @@ open class BaseViewModel : AndroidViewModel(Utils.getApp()), LifecycleObserver {
     fun <T> launchOnlyresult(
         block: suspend CoroutineScope.() -> BaseResult<T>,
         success: (T) -> Unit,
-        errorCall: (ResponseThrowable) -> Unit = {},
+        error: (ResponseThrowable) -> Unit = {
+            defUI.toastEvent.postValue("${it.code}:${it.errMsg}")
+        },
         complete: () -> Unit = {},
         isShowDialog: Boolean = true
     ) {
@@ -91,13 +94,12 @@ open class BaseViewModel : AndroidViewModel(Utils.getApp()), LifecycleObserver {
                     executeResponse(res) { success(it) }
                 },
                 {
-                    errorCall(it)
+                    error(it)
                 },
                 {
                     defUI.dismissDialog.call()
                     complete()
-                },
-                true
+                }
             )
         }
     }
@@ -122,16 +124,13 @@ open class BaseViewModel : AndroidViewModel(Utils.getApp()), LifecycleObserver {
         block: suspend CoroutineScope.() -> BaseResult<T>,
         success: suspend CoroutineScope.(BaseResult<T>) -> Unit,
         error: suspend CoroutineScope.(ResponseThrowable) -> Unit,
-        complete: suspend CoroutineScope.() -> Unit,
-        isHandlerError: Boolean = false
+        complete: suspend CoroutineScope.() -> Unit
     ) {
         coroutineScope {
             try {
                 success(block())
             } catch (e: Throwable) {
-                val err = ExceptionHandle.handleException(e)
-                if (!isHandlerError) defUI.toastEvent.postValue("${err.code}:${err.errMsg}")
-                else error(err)
+                error(ExceptionHandle.handleException(e))
             } finally {
                 complete()
             }
@@ -145,16 +144,13 @@ open class BaseViewModel : AndroidViewModel(Utils.getApp()), LifecycleObserver {
     private suspend fun handleException(
         block: suspend CoroutineScope.() -> Unit,
         error: suspend CoroutineScope.(ResponseThrowable) -> Unit,
-        complete: suspend CoroutineScope.() -> Unit,
-        isHandlerError: Boolean
+        complete: suspend CoroutineScope.() -> Unit
     ) {
         coroutineScope {
             try {
                 block()
             } catch (e: Throwable) {
-                val err = ExceptionHandle.handleException(e)
-                if (!isHandlerError) defUI.toastEvent.postValue("${err.code}:${err.errMsg}")
-                else error(err)
+                error(ExceptionHandle.handleException(e))
             } finally {
                 complete()
             }

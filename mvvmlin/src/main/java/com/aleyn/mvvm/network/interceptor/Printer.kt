@@ -11,8 +11,8 @@ import java.io.IOException
  * 当日志比较多时，有时候会出现输出不全的情况
  */
 object Printer {
-    private val LINE_SEPARATOR = System.getProperty("line.separator")
-    private val DOUBLE_SEPARATOR = LINE_SEPARATOR!! + LINE_SEPARATOR
+    private val LINE_SEPARATOR = System.getProperty("line.separator") ?: "\n"
+    private val DOUBLE_SEPARATOR = LINE_SEPARATOR + LINE_SEPARATOR
 
     private val OMITTED_RESPONSE = arrayOf(LINE_SEPARATOR, "Omitted response body")
     private val OMITTED_REQUEST = arrayOf(LINE_SEPARATOR, "Omitted request body")

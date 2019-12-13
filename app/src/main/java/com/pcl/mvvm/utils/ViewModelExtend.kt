@@ -30,7 +30,9 @@ import kotlinx.coroutines.withContext
 fun <T> BaseViewModel.launchOnlyresult(
     block: suspend CoroutineScope.() -> BaseResult<T>,
     success: (T) -> Unit,
-    errorCall: (ResponseThrowable) -> Unit = {},
+    error: (ResponseThrowable) -> Unit = {
+        defUI.toastEvent.postValue("${it.code}:${it.errMsg}")
+    },
     complete: () -> Unit = {},
     isShowDialog: Boolean = true
 ) {
@@ -42,13 +44,12 @@ fun <T> BaseViewModel.launchOnlyresult(
                 executeResponse(res) { success(it) }
             },
             {
-                errorCall(it)
+                error(it)
             },
             {
                 defUI.dismissDialog.call()
                 complete()
-            },
-            true
+            }
         )
     }
 }
@@ -71,20 +72,17 @@ private suspend fun <T> executeResponse(
 /**
  * 异常统一处理
  */
-private suspend fun <T> BaseViewModel.handleException(
+private suspend fun <T> handleException(
     block: suspend CoroutineScope.() -> BaseResult<T>,
     success: suspend CoroutineScope.(BaseResult<T>) -> Unit,
     error: suspend CoroutineScope.(ResponseThrowable) -> Unit,
-    complete: suspend CoroutineScope.() -> Unit,
-    isHandlerError: Boolean = false
-) {
+    complete: suspend CoroutineScope.() -> Unit
+    ) {
     coroutineScope {
         try {
             success(block())
         } catch (e: Throwable) {
-            val err = ExceptionHandle.handleException(e)
-            if (!isHandlerError) defUI.toastEvent.postValue("${err.code}:${err.errMsg}")
-            else error(err)
+            error(ExceptionHandle.handleException(e))
         } finally {
             complete()
         }

@@ -44,7 +44,7 @@ class HomeRepository private constructor(
 
         fun getInstance(netWork: HomeNetWork) =
             INSTANCE ?: synchronized(this) {
-                INSTANCE ?: HomeRepository(netWork)
+                INSTANCE ?: HomeRepository(netWork).also { INSTANCE = it }
             }
     }
 }

@@ -123,7 +123,7 @@ abstract class BaseFragment<VM : BaseViewModel, DB : ViewDataBinding> : Fragment
      * 关闭等待框
      */
     private fun dismissLoading() {
-        dialog?.let { dialog?.dismiss() }
+        dialog?.run { if (isShowing) dismiss() }
     }
 
 
