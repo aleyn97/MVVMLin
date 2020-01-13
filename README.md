@@ -29,7 +29,7 @@ dataBinding {
 ```
 dependencies {
     ...
-   implementation 'me.aleyn:MVVMLin:1.0.1'
+   implementation 'me.aleyn:MVVMLin:1.0.2'
 }
 ```
 或者 下载到本地导入Module
@@ -187,6 +187,25 @@ fun getFirstData() {
 
     }
 ```
+##### 2.4 IBaseResponse
+由于请求中依赖了基类，我们每个项目的基类字段都不相同，所以我们根据后台的字段定义完基类以后，要实现IBaseResponde接口,如下：
+```
+data class BaseResult<T>(
+    val errorMsg: String,
+    val errorCode: Int,
+    val data: T
+) : IBaseResponse<T> {
+
+    override fun code() = errorCode
+
+    override fun msg() = errorMsg
+
+    override fun data() = data
+
+    override fun isSuccess() = errorCode == 0
+}
+```
+来保证过滤请求结果的正常使用
 
 ### 3，例子
 Demo中只展示了三种列表使用方式
@@ -199,4 +218,6 @@ Demo中只展示了三种列表使用方式
 [BRVAH](https://github.com/CymChad/BaseRecyclerViewAdapterHelper) 对DataBinding也做了支持，详见Demo的 **MeFragment**
 
 ### 4，关于框架
-刚刚完成1.0版，也算是我对新东西的一个学习过程，问题应该还是挺多的，后续会进一步完善，下一步会考虑把Eventbus加进去，也欢迎大家多提意见。顺手给个Stat。哈哈~~~~~~
+后续会进一步完善，大家多提意见
+
+QQ群：(791382057)
