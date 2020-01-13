@@ -38,7 +38,7 @@ dependencies {
     api rootProject.ext.dependencies["material-dialogs-lifecycle"]
     //glide
     api rootProject.ext.dependencies.glide
-    annotationProcessor rootProject.ext.dependencies["glide-compiler"]
+    kapt rootProject.ext.dependencies["glide-compiler"]
     // utils 集合了大量常用的工具类
     api rootProject.ext.dependencies.utilcodex
 }

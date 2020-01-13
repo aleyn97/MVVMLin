@@ -16,7 +16,7 @@ class MeViewModel : BaseViewModel() {
     var popularWeb = MutableLiveData<List<UsedWeb>>()
 
     fun getPopularWeb() {
-        launch({
+        launchGo({
             val result = homeRepository.getPopularWeb()
             if (result.isSuccess()) {
                 popularWeb.value = result.data

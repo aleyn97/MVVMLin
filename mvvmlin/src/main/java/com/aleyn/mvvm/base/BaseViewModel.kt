@@ -7,14 +7,10 @@ import com.aleyn.mvvm.event.Message
 import com.aleyn.mvvm.event.SingleLiveEvent
 import com.aleyn.mvvm.network.ExceptionHandle
 import com.aleyn.mvvm.network.ResponseThrowable
-import com.blankj.utilcode.util.LogUtils
 import com.blankj.utilcode.util.Utils
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.flowOn
-import kotlin.system.measureTimeMillis
 
 /**
  *   @auther : Aleyn
@@ -28,9 +24,7 @@ open class BaseViewModel : AndroidViewModel(Utils.getApp()), LifecycleObserver {
      * 所有网络请求都在 viewModelScope 域中启动，当页面销毁时会自动
      * 调用ViewModel的  #onCleared 方法取消所有协程
      */
-    fun launchUI(block: suspend CoroutineScope.() -> Unit) {
-        viewModelScope.launch { block() }
-    }
+    fun launchUI(block: suspend CoroutineScope.() -> Unit) = viewModelScope.launch { block() }
 
     /**
      * 用流的方式进行网络请求
@@ -48,7 +42,7 @@ open class BaseViewModel : AndroidViewModel(Utils.getApp()), LifecycleObserver {
      * @param complete  完成回调（无论成功失败都会调用）
      * @param isShowDialog 是否显示加载框
      */
-    fun launch(
+    fun launchGo(
         block: suspend CoroutineScope.() -> Unit,
         error: suspend CoroutineScope.(ResponseThrowable) -> Unit = {
             defUI.toastEvent.postValue("${it.code}:${it.errMsg}")
@@ -73,12 +67,12 @@ open class BaseViewModel : AndroidViewModel(Utils.getApp()), LifecycleObserver {
      * 过滤请求结果，其他全抛异常
      * @param block 请求体
      * @param success 成功回调
-     * @param errorCall 失败回调
+     * @param error 失败回调
      * @param complete  完成回调（无论成功失败都会调用）
      * @param isShowDialog 是否显示加载框
      */
     fun <T> launchOnlyresult(
-        block: suspend CoroutineScope.() -> BaseResult<T>,
+        block: suspend CoroutineScope.() -> IBaseResponse<T>,
         success: (T) -> Unit,
         error: (ResponseThrowable) -> Unit = {
             defUI.toastEvent.postValue("${it.code}:${it.errMsg}")
@@ -108,12 +102,12 @@ open class BaseViewModel : AndroidViewModel(Utils.getApp()), LifecycleObserver {
      * 请求结果过滤
      */
     private suspend fun <T> executeResponse(
-        response: BaseResult<T>,
+        response: IBaseResponse<T>,
         success: suspend CoroutineScope.(T) -> Unit
     ) {
         coroutineScope {
-            if (response.isSuccess()) success(response.data)
-            else throw ResponseThrowable(response.errorCode, response.errorMsg)
+            if (response.isSuccess()) success(response.data())
+            else throw ResponseThrowable(response.code(), response.msg())
         }
     }
 
@@ -121,8 +115,8 @@ open class BaseViewModel : AndroidViewModel(Utils.getApp()), LifecycleObserver {
      * 异常统一处理
      */
     private suspend fun <T> handleException(
-        block: suspend CoroutineScope.() -> BaseResult<T>,
-        success: suspend CoroutineScope.(BaseResult<T>) -> Unit,
+        block: suspend CoroutineScope.() -> IBaseResponse<T>,
+        success: suspend CoroutineScope.(IBaseResponse<T>) -> Unit,
         error: suspend CoroutineScope.(ResponseThrowable) -> Unit,
         complete: suspend CoroutineScope.() -> Unit
     ) {

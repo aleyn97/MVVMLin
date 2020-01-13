@@ -1,12 +1,9 @@
 package com.pcl.mvvm.data
 
 import com.aleyn.mvvm.base.BaseModel
-import com.aleyn.mvvm.base.BaseResult
+import com.pcl.mvvm.app.base.BaseResult
 import com.pcl.mvvm.data.http.HomeNetWork
-import com.pcl.mvvm.network.entity.BannerBean
-import com.pcl.mvvm.network.entity.HomeListBean
-import com.pcl.mvvm.network.entity.NavTypeBean
-import com.pcl.mvvm.network.entity.UsedWeb
+import com.pcl.mvvm.network.entity.*
 
 /**
  *   @auther : Aleyn
