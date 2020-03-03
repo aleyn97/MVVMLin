@@ -1,7 +1,6 @@
 package com.pcl.mvvm.widget
 
 import android.annotation.SuppressLint
-import android.annotation.TargetApi
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Build

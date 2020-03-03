@@ -1,8 +1,13 @@
 package com.pcl.mvvm.network.api
 
 import com.pcl.mvvm.app.base.BaseResult
-import com.pcl.mvvm.network.entity.*
-import retrofit2.http.*
+import com.pcl.mvvm.network.entity.BannerBean
+import com.pcl.mvvm.network.entity.HomeListBean
+import com.pcl.mvvm.network.entity.NavTypeBean
+import com.pcl.mvvm.network.entity.UsedWeb
+import retrofit2.http.GET
+import retrofit2.http.Path
+import retrofit2.http.Query
 
 /**
  *   @auther : Aleyn

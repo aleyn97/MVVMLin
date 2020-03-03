@@ -2,14 +2,12 @@ package com.pcl.mvvm.ui.home
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.aleyn.mvvm.base.BaseFragment
-import com.blankj.utilcode.util.BarUtils
 import com.pcl.mvvm.R
 import com.pcl.mvvm.network.entity.ArticlesBean
 import com.pcl.mvvm.ui.detail.DetailActivity
