@@ -59,26 +59,30 @@ class HomeFragment : BaseFragment<HomeViewModel, ViewDataBinding>() {
 
     override fun lazyLoadData() {
         viewModel.run {
-            getBanner()
-            viewModel.getHomeList(page)
+
+            getBanner().observe(this@HomeFragment, Observer {
+                banner.setBannerData(it)
+            })
+
+            getHomeList(page).observe(this@HomeFragment, Observer {
+                if (srl_home.isRefreshing) srl_home.isRefreshing = false
+                if (it.curPage == 1) mAdapter.setNewData(it.datas)
+                else mAdapter.addData(it.datas)
+                if (it.curPage == it.pageCount) mAdapter.loadMoreEnd()
+                else mAdapter.loadMoreComplete()
+                page = it.curPage
+            })
         }
-        viewModel.mBanners.observe(this, Observer {
-            banner.setBannerData(it)
-        })
-        viewModel.projectData.observe(this, Observer {
-            if (srl_home.isRefreshing) srl_home.isRefreshing = false
-            if (it.curPage == 1) mAdapter.setNewData(it.datas)
-            else mAdapter.addData(it.datas)
-            if (it.curPage == it.pageCount) mAdapter.loadMoreEnd()
-            else mAdapter.loadMoreComplete()
-            page = it.curPage
-        })
     }
 
+    /**
+     * 下拉刷新
+     */
     private fun dropDownRefresh() {
         page = 0
         srl_home.isRefreshing = true
-        viewModel.getHomeList(page)
+        viewModel.getHomeList(page, true)
+        viewModel.getBanner(true)
     }
 
     /**

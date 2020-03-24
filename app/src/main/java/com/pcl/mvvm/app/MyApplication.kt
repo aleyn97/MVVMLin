@@ -10,6 +10,7 @@ import com.pcl.mvvm.BuildConfig
  */
 class MyApplication : BaseApplication() {
 
+
     override fun onCreate() {
         super.onCreate()
         LogUtils.getConfig().run {
