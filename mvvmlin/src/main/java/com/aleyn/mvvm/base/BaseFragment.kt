@@ -126,6 +126,11 @@ abstract class BaseFragment<VM : BaseViewModel, DB : ViewDataBinding> : Fragment
         dialog?.run { if (isShowing) dismiss() }
     }
 
+    /**
+     * 是否和 Activity 共享 ViewModel,默认不共享
+     * Fragment 要和宿主 Activity 的泛型是同一个 ViewModel
+     */
+    open fun isShareVM(): Boolean = false
 
     /**
      * 创建 ViewModel
@@ -136,7 +141,8 @@ abstract class BaseFragment<VM : BaseViewModel, DB : ViewDataBinding> : Fragment
         if (type is ParameterizedType) {
             val tp = type.actualTypeArguments[0]
             val tClass = tp as? Class<VM> ?: BaseViewModel::class.java
-            viewModel = ViewModelProvider(this, ViewModelFactory()).get(tClass) as VM
+            val viewModelStore = if (isShareVM()) activity!!.viewModelStore else this.viewModelStore
+            viewModel = ViewModelProvider(viewModelStore, ViewModelFactory()).get(tClass) as VM
         }
     }
 
