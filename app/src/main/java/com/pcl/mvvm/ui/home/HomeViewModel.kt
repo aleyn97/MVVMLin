@@ -10,19 +10,25 @@ class HomeViewModel : BaseViewModel() {
 
     private val homeRepository by lazy { InjectorUtil.getHomeRepository() }
 
-    val mBanners = MutableLiveData<List<BannerBean>>()
+    private val mBanners = MutableLiveData<List<BannerBean>>()
 
-    val projectData = MutableLiveData<HomeListBean>()
+    private val projectData = MutableLiveData<HomeListBean>()
 
-    fun getBanner() {
-        launchOnlyresult({ homeRepository.getBannerData() }, {
-            mBanners.value = it
+    fun getBanner(refresh: Boolean = false): MutableLiveData<List<BannerBean>> {
+        launchGo({
+            mBanners.value = homeRepository.getBannerData(refresh)
         })
+        return mBanners
     }
 
-    fun getHomeList(page: Int) {
-        launchOnlyresult({ homeRepository.getHomeList(page) }, {
-            projectData.value = it
+    /**
+     * @param page 页码
+     * @param refresh 是否刷新
+     */
+    fun getHomeList(page: Int, refresh: Boolean = false): MutableLiveData<HomeListBean> {
+        launchGo({
+            projectData.value = homeRepository.getHomeList(page, refresh)
         })
+        return projectData
     }
 }

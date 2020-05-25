@@ -2,7 +2,6 @@ package com.pcl.mvvm.ui.project
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.lifecycle.Observer
 import com.aleyn.mvvm.base.BaseFragment
 import com.aleyn.mvvm.event.Message
 import com.pcl.mvvm.R

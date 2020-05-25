@@ -11,7 +11,7 @@ object TabLayoutAdapter {
 
     @BindingAdapter(value = ["items"], requireAll = false)
     @JvmStatic
-    fun setImageUrl(tabLayout: TabLayout, items: List<String>) {
+    fun setTabText(tabLayout: TabLayout, items: List<String>) {
         items.forEach {
             tabLayout.addTab(tabLayout.newTab().setText(it))
         }

@@ -33,13 +33,19 @@ dependencies {
     testImplementation rootProject.ext.test.junit
     androidTestImplementation rootProject.ext.test.runner
     androidTestImplementation rootProject.ext.test["espresso-core"]
+    //MVVMLin
+    implementation project(path: ':mvvmlin')
     //第三方
     implementation rootProject.ext.dependencies.banner
     implementation rootProject.ext.dependencies['bottom-tab']
     implementation rootProject.ext.dependencies.BRVAH
     implementation rootProject.ext.dependencies.bdclta
     implementation rootProject.ext.dependencies['bdclta-rv']
-    //MVVMLin
-    implementation project(path: ':mvvmlin')
+
+    //Room
+    api rootProject.ext.room["room-runtime"]
+    api rootProject.ext.room["room-ktx"]
+    kapt rootProject.ext.room["room-compiler"]
+    testApi rootProject.ext.room["room-testing"]
 
 }

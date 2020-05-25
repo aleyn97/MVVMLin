@@ -1,6 +1,6 @@
 package com.pcl.mvvm.network.api
 
-import com.aleyn.mvvm.base.BaseResult
+import com.pcl.mvvm.app.base.BaseResult
 import com.pcl.mvvm.network.entity.BannerBean
 import com.pcl.mvvm.network.entity.HomeListBean
 import com.pcl.mvvm.network.entity.NavTypeBean

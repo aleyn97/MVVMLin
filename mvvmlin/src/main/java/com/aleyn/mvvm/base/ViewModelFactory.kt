@@ -2,8 +2,6 @@ package com.aleyn.mvvm.base
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.blankj.utilcode.util.LogUtils
-import java.lang.reflect.ParameterizedType
 
 /**
  *   @auther : Aleyn

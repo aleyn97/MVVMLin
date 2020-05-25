@@ -2,14 +2,12 @@ package com.pcl.mvvm.ui.home
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.aleyn.mvvm.base.BaseFragment
-import com.blankj.utilcode.util.BarUtils
 import com.pcl.mvvm.R
 import com.pcl.mvvm.network.entity.ArticlesBean
 import com.pcl.mvvm.ui.detail.DetailActivity
@@ -61,26 +59,30 @@ class HomeFragment : BaseFragment<HomeViewModel, ViewDataBinding>() {
 
     override fun lazyLoadData() {
         viewModel.run {
-            getBanner()
-            viewModel.getHomeList(page)
+
+            getBanner().observe(this@HomeFragment, Observer {
+                banner.setBannerData(it)
+            })
+
+            getHomeList(page).observe(this@HomeFragment, Observer {
+                if (srl_home.isRefreshing) srl_home.isRefreshing = false
+                if (it.curPage == 1) mAdapter.setNewData(it.datas)
+                else mAdapter.addData(it.datas)
+                if (it.curPage == it.pageCount) mAdapter.loadMoreEnd()
+                else mAdapter.loadMoreComplete()
+                page = it.curPage
+            })
         }
-        viewModel.mBanners.observe(this, Observer {
-            banner.setBannerData(it)
-        })
-        viewModel.projectData.observe(this, Observer {
-            if (srl_home.isRefreshing) srl_home.isRefreshing = false
-            if (it.curPage == 1) mAdapter.setNewData(it.datas)
-            else mAdapter.addData(it.datas)
-            if (it.curPage == it.pageCount) mAdapter.loadMoreEnd()
-            else mAdapter.loadMoreComplete()
-            page = it.curPage
-        })
     }
 
+    /**
+     * 下拉刷新
+     */
     private fun dropDownRefresh() {
         page = 0
         srl_home.isRefreshing = true
-        viewModel.getHomeList(page)
+        viewModel.getHomeList(page, true)
+        viewModel.getBanner(true)
     }
 
     /**

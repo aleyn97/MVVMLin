@@ -27,7 +27,7 @@ class HomeNetWork {
         private var netWork: HomeNetWork? = null
 
         fun getInstance() = netWork ?: synchronized(this) {
-            netWork ?: HomeNetWork()
+            netWork ?: HomeNetWork().also { netWork = it }
         }
     }
 

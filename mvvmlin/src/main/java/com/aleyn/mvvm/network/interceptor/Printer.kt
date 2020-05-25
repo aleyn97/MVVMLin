@@ -40,7 +40,7 @@ object Printer {
         line.isEmpty() || N == line || T == line || line.trim().isEmpty()
 
     internal fun printJsonRequest(builder: LoggingInterceptor, request: Request) {
-        val requestBody = LINE_SEPARATOR!! + BODY_TAG + LINE_SEPARATOR + bodyToString(request)
+        val requestBody = LINE_SEPARATOR + BODY_TAG + LINE_SEPARATOR + bodyToString(request)
         val tag = builder.requestTag
         if (builder.logger == null)
             log(builder.type, tag, REQUEST_UP_LINE)
@@ -167,7 +167,7 @@ object Printer {
                     "$code $DOUBLE_SEPARATOR ${if (loggableHeader) HEADERS_TAG + LINE_SEPARATOR + dotHeaders(
                         header
                     ) else ""}"
-        return message.split(LINE_SEPARATOR!!.toRegex()).dropLastWhile { it.isEmpty() }
+        return message.split(LINE_SEPARATOR.toRegex()).dropLastWhile { it.isEmpty() }
             .toTypedArray()
     }
 

@@ -1,5 +1,7 @@
 package com.pcl.mvvm.network.entity
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.stx.xhb.androidx.entity.SimpleBannerInfo
 
 /**
@@ -22,9 +24,11 @@ import com.stx.xhb.androidx.entity.SimpleBannerInfo
  * type : 0
  * url : http://www.wanandroid.com/blog/show/2037
  */
+@Entity(tableName = "banner")
 data class BannerBean(
-    val desc: String,
+    @PrimaryKey
     val id: Int,
+    val desc: String,
     val imagePath: String,
     val isVisible: Int,
     val order: Int,

@@ -5,9 +5,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.blankj.utilcode.util.BarUtils
 import com.pcl.mvvm.R
-import com.pcl.mvvm.ui.project.ProjectFragment
 import com.pcl.mvvm.ui.home.HomeFragment
 import com.pcl.mvvm.ui.me.MeFragment
+import com.pcl.mvvm.ui.project.ProjectFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import me.majiajie.pagerbottomtabstrip.listener.OnTabItemSelectedListener
 

@@ -88,13 +88,14 @@ abstract class BaseActivity<VM : BaseViewModel, DB : ViewDataBinding> : AppCompa
                 .maxWidth(R.dimen.dialog_width)
         }
         dialog?.show()
+
     }
 
     /**
      * 关闭等待框
      */
     private fun dismissLoading() {
-        if (dialog!!.isShowing) dialog?.dismiss()
+        dialog?.run { if (isShowing) dismiss() }
     }
 
 
