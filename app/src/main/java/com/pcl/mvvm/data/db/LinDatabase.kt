@@ -1,6 +1,5 @@
 package com.pcl.mvvm.data.db
 
-import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -9,7 +8,6 @@ import com.pcl.mvvm.data.db.dao.HomeDao
 import com.pcl.mvvm.data.db.migration.MIGRATION
 import com.pcl.mvvm.network.entity.BannerBean
 import com.pcl.mvvm.network.entity.HomeListBean
-import com.pcl.mvvm.utils.RetrofitClient
 
 /**
  *   @auther : Aleyn
