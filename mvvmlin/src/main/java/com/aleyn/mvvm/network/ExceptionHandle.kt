@@ -15,7 +15,9 @@ object ExceptionHandle {
 
     fun handleException(e: Throwable): ResponseThrowable {
         val ex: ResponseThrowable
-        if (e is HttpException) {
+        if (e is ResponseThrowable) {
+            ex = e
+        } else if (e is HttpException) {
             ex = ResponseThrowable(ERROR.HTTP_ERROR, e)
         } else if (e is JsonParseException
             || e is JSONException

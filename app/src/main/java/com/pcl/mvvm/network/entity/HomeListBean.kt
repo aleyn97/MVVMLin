@@ -29,7 +29,7 @@ data class HomeListBean(
     val pageCount: Int,
     val size: Int,
     val total: Int,
-    val datas: List<ArticlesBean>
+    val datas: MutableList<ArticlesBean>
 )
 
 

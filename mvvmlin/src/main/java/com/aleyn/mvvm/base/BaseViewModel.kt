@@ -83,51 +83,20 @@ open class BaseViewModel : AndroidViewModel(Utils.getApp()), LifecycleObserver {
         if (isShowDialog) defUI.showDialog.call()
         launchUI {
             handleException(
-                { withContext(Dispatchers.IO) { block() } },
-                { res ->
-                    executeResponse(res) { success(it) }
-                },
                 {
-                    error(it)
+                    withContext(Dispatchers.IO) {
+                        block().let {
+                            if (it.isSuccess()) it.data()
+                            else throw ResponseThrowable(it.code(), it.msg())
+                        }
+                    }.also { success(it) }
                 },
+                { error(it) },
                 {
                     defUI.dismissDialog.call()
                     complete()
                 }
             )
-        }
-    }
-
-    /**
-     * 请求结果过滤
-     */
-    private suspend fun <T> executeResponse(
-        response: IBaseResponse<T>,
-        success: suspend CoroutineScope.(T) -> Unit
-    ) {
-        coroutineScope {
-            if (response.isSuccess()) success(response.data())
-            else throw ResponseThrowable(response.code(), response.msg())
-        }
-    }
-
-    /**
-     * 异常统一处理
-     */
-    private suspend fun <T> handleException(
-        block: suspend CoroutineScope.() -> IBaseResponse<T>,
-        success: suspend CoroutineScope.(IBaseResponse<T>) -> Unit,
-        error: suspend CoroutineScope.(ResponseThrowable) -> Unit,
-        complete: suspend CoroutineScope.() -> Unit
-    ) {
-        coroutineScope {
-            try {
-                success(block())
-            } catch (e: Throwable) {
-                error(ExceptionHandle.handleException(e))
-            } finally {
-                complete()
-            }
         }
     }
 

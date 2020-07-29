@@ -44,7 +44,7 @@ class HomeFragment : BaseFragment<HomeViewModel, ViewDataBinding>() {
         }
         mAdapter.apply {
             addHeaderView(banner)
-            setOnLoadMoreListener(this@HomeFragment::loadMore, rv_home)
+            loadMoreModule.setOnLoadMoreListener(this@HomeFragment::loadMore)
             setOnItemClickListener { adapter, _, position ->
                 val item = adapter.data[position] as ArticlesBean
                 val intent = Intent(context, DetailActivity::class.java)
@@ -66,10 +66,10 @@ class HomeFragment : BaseFragment<HomeViewModel, ViewDataBinding>() {
 
             getHomeList(page).observe(this@HomeFragment, Observer {
                 if (srl_home.isRefreshing) srl_home.isRefreshing = false
-                if (it.curPage == 1) mAdapter.setNewData(it.datas)
+                if (it.curPage == 1) mAdapter.setNewInstance(it.datas)
                 else mAdapter.addData(it.datas)
-                if (it.curPage == it.pageCount) mAdapter.loadMoreEnd()
-                else mAdapter.loadMoreComplete()
+                if (it.curPage == it.pageCount) mAdapter.loadMoreModule.loadMoreEnd()
+                else mAdapter.loadMoreModule.loadMoreComplete()
                 page = it.curPage
             })
         }

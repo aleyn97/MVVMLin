@@ -49,5 +49,5 @@ interface HomeService {
      * 常用网站
      */
     @GET("friend/json")
-    suspend fun getPopularWeb(): BaseResult<List<UsedWeb>>
+    suspend fun getPopularWeb(): BaseResult<MutableList<UsedWeb>>
 }

@@ -27,7 +27,7 @@ class MeFragment : BaseFragment<MeViewModel, MeFragmentBinding>() {
             adapter = mAdapter
         }
         viewModel.popularWeb.observe(viewLifecycleOwner, Observer {
-            mAdapter.setNewData(it)
+            mAdapter.setNewInstance(it)
         })
         mAdapter.setOnItemClickListener { _, _, position ->
             val intent = Intent().apply {

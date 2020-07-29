@@ -13,7 +13,7 @@ class MeViewModel : BaseViewModel() {
 
     private val homeRepository by lazy { InjectorUtil.getHomeRepository() }
 
-    var popularWeb = MutableLiveData<List<UsedWeb>>()
+    var popularWeb = MutableLiveData<MutableList<UsedWeb>>()
 
     fun getPopularWeb() {
         launchGo({

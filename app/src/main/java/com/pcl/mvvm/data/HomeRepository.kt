@@ -52,7 +52,7 @@ class HomeRepository private constructor(
         return netWork.getProjectList(page, cid)
     }
 
-    suspend fun getPopularWeb(): BaseResult<List<UsedWeb>> {
+    suspend fun getPopularWeb(): BaseResult<MutableList<UsedWeb>> {
         return netWork.getPopularWeb()
     }
 

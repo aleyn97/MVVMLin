@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.blankj.utilcode.util.BarUtils
+import com.blankj.utilcode.util.PermissionUtils
 import com.pcl.mvvm.R
 import com.pcl.mvvm.ui.home.HomeFragment
 import com.pcl.mvvm.ui.me.MeFragment
@@ -21,6 +22,20 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         BarUtils.setStatusBarColor(this, resources.getColor(R.color.colorPrimary))
         initView()
+        PermissionUtils.permission(*PermissionUtils.getPermissions().toTypedArray())
+            .callback(object : PermissionUtils.FullCallback {
+                override fun onGranted(granted: MutableList<String>) {
+
+                }
+
+                override fun onDenied(
+                    forever: MutableList<String>, denied: MutableList<String>
+                ) {
+
+                }
+
+            })
+            .request()
     }
 
     private fun initView() {

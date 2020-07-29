@@ -79,8 +79,7 @@ class ProjectViewModel : BaseViewModel() {
     }
 
 
-    var tabOnClickListener = object : TabLayout.BaseOnTabSelectedListener<TabLayout.Tab> {
-
+    var tabOnClickListener = object : TabLayout.OnTabSelectedListener {
         override fun onTabReselected(p0: TabLayout.Tab?) {
         }
 

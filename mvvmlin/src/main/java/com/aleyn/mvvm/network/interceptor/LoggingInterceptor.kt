@@ -1,26 +1,26 @@
 package com.aleyn.mvvm.network.interceptor
 
 import com.blankj.utilcode.util.JsonUtils
+import com.blankj.utilcode.util.LogUtils
 import okhttp3.*
 import okhttp3.internal.platform.Platform
-import okhttp3.internal.platform.Platform.INFO
+import okio.Buffer
 import java.io.IOException
+import java.io.UnsupportedEncodingException
+import java.net.URLDecoder
+import java.nio.charset.Charset
+import java.nio.charset.StandardCharsets
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 /**
- * 借鉴其他Demo里的日志打印
- * #当日志比较多时，有时候会出现输出不全的情况
+ * @auther : Aleyn
+ * time   : 2020/07/24
  */
-class LoggingInterceptor : Interceptor {
-
-    private var tag: String = "HttpLogging"
-    var isDebug: Boolean = false
-    var type = INFO
-    var requestTag: String = tag
-    var responseTag: String = tag
-    var level = Level.BASIC
-    private val headers = Headers.Builder()
-    var logger: Logger? = null
+class LoggingInterceptor(
+    private var printLevel: Level = Level.ALL,
+    private val mPrinter: FormatPrinter = DefaultPrinter()
+) : Interceptor {
 
 
     interface Logger {
@@ -29,94 +29,238 @@ class LoggingInterceptor : Interceptor {
         companion object {
             val DEFAULT: Logger = object : Logger {
                 override fun log(level: Int, tag: String, msg: String) {
-                    Platform.get().log(level, msg, null)
+                    Platform.get().log(level, tag + msg, null)
                 }
             }
         }
     }
 
-    @Throws(IOException::class)
-    override fun intercept(chain: Interceptor.Chain): Response {
-        var request = chain.request()
-        if (getHeaders().size() > 0) {
-            val headers = request.headers()
-            val names = headers.names()
-            val iterator = names.iterator()
-            val requestBuilder = request.newBuilder()
-            requestBuilder.headers(getHeaders())
-            while (iterator.hasNext()) {
-                val name = iterator.next()
-                requestBuilder.addHeader(name, headers.get(name)!!)
-            }
-            request = requestBuilder.build()
-        }
 
-        if (!isDebug || level == Level.NONE) {
-            return chain.proceed(request)
-        }
-        val requestBody = request.body()
+    enum class Level {
+        /**
+         * 不打印log
+         */
+        NONE,
 
-        var rContentType: MediaType? = null
-        if (requestBody != null) {
-            rContentType = request.body()!!.contentType()
-        }
+        /**
+         * 只打印请求信息
+         */
+        REQUEST,
 
-        var rSubtype: String? = null
-        if (rContentType != null) {
-            rSubtype = rContentType.subtype()
-        }
+        /**
+         * 只打印响应信息
+         */
+        RESPONSE,
 
-        if (rSubtype != null && (rSubtype.contains("json")
-                    || rSubtype.contains("xml")
-                    || rSubtype.contains("plain")
-                    || rSubtype.contains("html"))
-        ) {
-            Printer.printJsonRequest(this, request)
-        } else {
-            Printer.printFileRequest(this, request)
-        }
-
-        val st = System.nanoTime()
-        val response = chain.proceed(request)
-
-        val segmentList = request.url().encodedPathSegments()
-        val chainMs = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - st)
-        val header = response.headers().toString()
-        val code = response.code()
-        val isSuccessful = response.isSuccessful
-        val responseBody = response.body()
-        val contentType = responseBody!!.contentType()
-
-        var subtype: String? = null
-        val body: ResponseBody
-
-        if (contentType != null) {
-            subtype = contentType.subtype()
-        }
-
-        if (subtype != null && (subtype.contains("json")
-                    || subtype.contains("xml")
-                    || subtype.contains("plain")
-                    || subtype.contains("html"))
-        ) {
-            val bodyString = responseBody.string()
-            val bodyJson = JsonUtils.formatJson(bodyString)
-            Printer.printJsonResponse(
-                this,
-                chainMs,
-                isSuccessful,
-                code,
-                header,
-                bodyJson,
-                segmentList
-            )
-            body = ResponseBody.create(contentType, bodyString)
-        } else {
-            Printer.printFileResponse(this, chainMs, isSuccessful, code, header, segmentList)
-            return response
-        }
-        return response.newBuilder().body(body).build()
+        /**
+         * 所有数据全部打印
+         */
+        ALL
     }
 
-    private fun getHeaders(): Headers = headers.build()
+    @Throws(IOException::class)
+    override fun intercept(chain: Interceptor.Chain): Response {
+        val request = chain.request()
+        val logRequest =
+            printLevel == Level.ALL || printLevel != Level.NONE && printLevel == Level.REQUEST
+        if (logRequest) {
+            //打印请求信息
+            if (request.body() != null && isParseable(
+                    request.body()!!.contentType()
+                )
+            ) {
+                mPrinter.printJsonRequest(
+                    request,
+                    parseParams(request)
+                )
+            } else {
+                mPrinter.printFileRequest(request)
+            }
+        }
+        val logResponse =
+            printLevel == Level.ALL || printLevel != Level.NONE && printLevel == Level.RESPONSE
+        val t1 = if (logResponse) System.nanoTime() else 0
+        val originalResponse: Response
+        originalResponse = try {
+            chain.proceed(request)
+        } catch (e: Exception) {
+            LogUtils.w("Http Error: $e")
+            throw e
+        }
+        val t2 = if (logResponse) System.nanoTime() else 0
+        val responseBody = originalResponse.body()
+
+        //打印响应结果
+        var bodyString: String? = null
+        if (responseBody != null && isParseable(responseBody.contentType())) {
+            bodyString = printResult(request, originalResponse, logResponse)
+        }
+        if (logResponse) {
+            val segmentList =
+                request.url().encodedPathSegments()
+            val header = originalResponse.headers().toString()
+            val code = originalResponse.code()
+            val isSuccessful = originalResponse.isSuccessful
+            val message = originalResponse.message()
+            val url = originalResponse.request().url().toString()
+            if (responseBody != null && isParseable(responseBody.contentType())) {
+                mPrinter.printJsonResponse(
+                    TimeUnit.NANOSECONDS.toMillis(t2 - t1), isSuccessful,
+                    code, header, responseBody.contentType(), bodyString, segmentList, message, url
+                )
+            } else {
+                mPrinter.printFileResponse(
+                    TimeUnit.NANOSECONDS.toMillis(t2 - t1),
+                    isSuccessful, code, header, segmentList, message, url
+                )
+            }
+        }
+        return originalResponse
+    }
+
+    /**
+     * 打印响应结果
+     *
+     * @param request     [Request]
+     * @param response    [Response]
+     * @param logResponse 是否打印响应结果
+     * @return 解析后的响应结果
+     * @throws IOException
+     */
+    @Throws(IOException::class)
+    private fun printResult(
+        request: Request,
+        response: Response,
+        logResponse: Boolean
+    ): String? {
+        return try {
+            //读取服务器返回的结果
+            val responseBody = response.newBuilder().build().body()
+            val source = responseBody!!.source()
+            source.request(Long.MAX_VALUE) // Buffer the entire body.
+            val buffer = source.buffer()
+
+            //获取content的压缩类型
+            val encoding = response
+                .headers()["Content-Encoding"]
+            val clone = buffer.clone()
+
+            //解析response content
+            parseContent(responseBody, encoding, clone)
+        } catch (e: IOException) {
+            e.printStackTrace()
+            "{\"error\": \"" + e.message + "\"}"
+        }
+    }
+
+    /**
+     * 解析服务器响应的内容
+     *
+     * @param responseBody [ResponseBody]
+     * @param encoding     编码类型
+     * @param clone        克隆后的服务器响应内容
+     * @return 解析后的响应结果
+     */
+    private fun parseContent(
+        responseBody: ResponseBody?,
+        encoding: String?,
+        clone: Buffer
+    ): String? {
+        var charset = StandardCharsets.UTF_8
+        val contentType = responseBody!!.contentType()
+        if (contentType != null) {
+            charset = contentType.charset(charset)
+        }
+        return clone.readString(charset)
+    }
+
+    companion object {
+        /**
+         * 解析请求服务器的请求参数
+         *
+         * @param request [Request]
+         * @return 解析后的请求信息
+         * @throws UnsupportedEncodingException
+         */
+        @Throws(UnsupportedEncodingException::class)
+        fun parseParams(request: Request): String {
+            return try {
+                val body = request.newBuilder().build().body() ?: return ""
+                val requestbuffer = Buffer()
+                body.writeTo(requestbuffer)
+                var charset = Charset.forName("UTF-8")
+                val contentType = body.contentType()
+                if (contentType != null) {
+                    charset = contentType.charset(charset)
+                }
+                var json = requestbuffer.readString(charset)
+                if (hasUrlEncoded(json)) {
+                    json = URLDecoder.decode(
+                        json,
+                        convertCharset(charset)
+                    )
+                }
+                JsonUtils.formatJson(json)
+            } catch (e: IOException) {
+                e.printStackTrace()
+                "{\"error\": \"" + e.message + "\"}"
+            }
+        }
+
+        /**
+         * 是否可以解析
+         *
+         * @param mediaType [MediaType]
+         * @return `true` 为可以解析
+         */
+        fun isParseable(mediaType: MediaType?): Boolean {
+            return if (mediaType == null) false else isText(mediaType) || isPlain(mediaType)
+                    || isJson(mediaType) || isForm(mediaType)
+        }
+
+        private fun isText(mediaType: MediaType?): Boolean {
+            return if (mediaType?.type() == null) false else mediaType.type() == "text"
+        }
+
+        private fun isPlain(mediaType: MediaType?): Boolean {
+            return if (mediaType?.subtype() == null) false else mediaType.subtype()
+                .toLowerCase(Locale.ROOT).contains("plain")
+        }
+
+        fun isJson(mediaType: MediaType?): Boolean {
+            return if (mediaType?.subtype() == null) false else mediaType.subtype()
+                .toLowerCase(Locale.ROOT).contains("json")
+        }
+
+        private fun isForm(mediaType: MediaType?): Boolean {
+            return if (mediaType?.subtype() == null) false else mediaType.subtype()
+                .toLowerCase(Locale.ROOT).contains("x-www-form-urlencoded")
+        }
+
+        private fun convertCharset(charset: Charset?): String {
+            val s = charset.toString()
+            val i = s.indexOf("[")
+            return if (i == -1) s else s.substring(i + 1, s.length - 1)
+        }
+
+        private fun hasUrlEncoded(str: String): Boolean {
+            var encode = false
+            for (i in str.indices) {
+                val c = str[i]
+                if (c == '%' && i + 2 < str.length) {
+                    // 判断是否符合urlEncode规范
+                    val c1 = str[i + 1]
+                    val c2 = str[i + 2]
+                    if (isValidHexChar(c1) && isValidHexChar(c2)) {
+                        encode = true
+                        break
+                    } else break
+                }
+            }
+            return encode
+        }
+
+        private fun isValidHexChar(c: Char): Boolean =
+            c in '0'..'9' || c in 'a'..'f' || c in 'A'..'F'
+    }
 }

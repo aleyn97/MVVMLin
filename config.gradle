@@ -6,26 +6,26 @@ ext {
             applicationId    : "com.pcl.mvvm",
             minSdkVersion    : 19,
             targetSdkVersion : 28,
-            versionCode      : 4,
-            versionName      : "1.0.3",
+            versionCode      : 5,
+            versionName      : "1.0.4",
     ]
     //version配置
     versions = [
             appcompat : "1.1.0",
-            material  : '1.0.0',
+            material  : '1.1.0',
             junit     : "4.12",
-            extensions: '2.2.0-rc01',
+            extensions: '2.2.0',
             constraint: '1.1.3',
             annotation: '1.1.0',
             dagger2   : '2.26',
-            room      : '2.2.4'
+            room      : '2.2.5'
     ]
 
     //androidx
     androidx = [
             appcompat          : "androidx.appcompat:appcompat:${versions['appcompat']}",
             material           : "com.google.android.material:material:${versions['material']}",
-            'core-ktx'         : "androidx.core:core-ktx:1.1.0",
+            'core-ktx'         : "androidx.core:core-ktx:1.3.1",
             'constraint-layout': "androidx.constraintlayout:constraintlayout:${versions["constraint"]}",
             //viewModel and LiveData
             extensions         : "androidx.lifecycle:lifecycle-extensions:${versions['extensions']}",
@@ -63,8 +63,8 @@ ext {
     //依赖第三方配置
     dependencies = [
             //glide图片加载
-            glide                       : "com.github.bumptech.glide:glide:4.9.0",
-            "glide-compiler"            : "com.github.bumptech.glide:compiler:4.9.0",
+            glide                       : "com.github.bumptech.glide:glide:4.11.0",
+            "glide-compiler"            : "com.github.bumptech.glide:compiler:4.11.0",
             //material-dialogs
             "material-dialogs-lifecycle": "com.afollestad.material-dialogs:lifecycle:3.1.1",
             "material-dialogs-core"     : "com.afollestad.material-dialogs:core:3.1.1",
@@ -72,9 +72,10 @@ ext {
             utilcodex                   : 'com.blankj:utilcodex:1.29.0',
             banner                      : 'com.github.xiaohaibin:XBanner:androidx_v1.0.2',
             'bottom-tab'                : 'me.majiajie:pager-bottom-tab-strip:2.3.0X',
-            BRVAH                       : 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.46',
+            BRVAH                       : 'com.github.CymChad:BaseRecyclerViewAdapterHelper:3.0.2',
             bdclta                      : 'me.tatarka.bindingcollectionadapter2:bindingcollectionadapter:3.1.1',
-            'bdclta-rv'                 : 'me.tatarka.bindingcollectionadapter2:bindingcollectionadapter-recyclerview:3.1.1'
+            'bdclta-rv'                 : 'me.tatarka.bindingcollectionadapter2:bindingcollectionadapter-recyclerview:3.1.1',
+            swiperefresh                : 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     ]
 
     androidxs = androidx.values()

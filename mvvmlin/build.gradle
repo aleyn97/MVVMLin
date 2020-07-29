@@ -27,8 +27,6 @@ android {
 
 dependencies {
     api fileTree(dir: 'libs', include: ['*.jar'])
-    api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-
     //androidx
     api rootProject.ext.androidxs
     //network
