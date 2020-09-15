@@ -66,11 +66,13 @@ class HomeFragment : BaseFragment<HomeViewModel, ViewDataBinding>() {
 
             getHomeList(page).observe(this@HomeFragment, Observer {
                 if (srl_home.isRefreshing) srl_home.isRefreshing = false
-                if (it.curPage == 1) mAdapter.setNewInstance(it.datas)
-                else mAdapter.addData(it.datas)
-                if (it.curPage == it.pageCount) mAdapter.loadMoreModule.loadMoreEnd()
-                else mAdapter.loadMoreModule.loadMoreComplete()
-                page = it.curPage
+                it?.let {
+                    if (it.curPage == 1) mAdapter.setNewInstance(it.datas)
+                    else mAdapter.addData(it.datas)
+                    if (it.curPage == it.pageCount) mAdapter.loadMoreModule.loadMoreEnd()
+                    else mAdapter.loadMoreModule.loadMoreComplete()
+                    page = it.curPage
+                }
             })
         }
     }

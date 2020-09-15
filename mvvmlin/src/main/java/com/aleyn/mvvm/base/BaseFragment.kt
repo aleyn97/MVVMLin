@@ -127,13 +127,10 @@ abstract class BaseFragment<VM : BaseViewModel, DB : ViewDataBinding> : Fragment
     }
 
     /**
-     * 是否和 Activity 共享 ViewModel,默认不共享
-     * Fragment 要和宿主 Activity 的泛型是同一个 ViewModel
-     */
-    open fun isShareVM(): Boolean = false
-
-    /**
      * 创建 ViewModel
+     *
+     * 共享 ViewModel的时候，重写  Fragmnt 的 getViewModelStore() 方法，
+     * 返回 activity 的  ViewModelStore 或者 父 Fragmnt 的 ViewModelStore
      */
     @Suppress("UNCHECKED_CAST")
     private fun createViewModel() {
@@ -141,7 +138,6 @@ abstract class BaseFragment<VM : BaseViewModel, DB : ViewDataBinding> : Fragment
         if (type is ParameterizedType) {
             val tp = type.actualTypeArguments[0]
             val tClass = tp as? Class<VM> ?: BaseViewModel::class.java
-            val viewModelStore = if (isShareVM()) activity!!.viewModelStore else this.viewModelStore
             viewModel = ViewModelProvider(viewModelStore, ViewModelFactory()).get(tClass) as VM
         }
     }

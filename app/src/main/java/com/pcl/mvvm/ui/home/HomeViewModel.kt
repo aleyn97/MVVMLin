@@ -28,6 +28,8 @@ class HomeViewModel : BaseViewModel() {
     fun getHomeList(page: Int, refresh: Boolean = false): MutableLiveData<HomeListBean> {
         launchGo({
             projectData.value = homeRepository.getHomeList(page, refresh)
+        }, {
+            projectData.value = null
         })
         return projectData
     }
