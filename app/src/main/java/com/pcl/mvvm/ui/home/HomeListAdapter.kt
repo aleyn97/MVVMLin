@@ -1,7 +1,7 @@
 package com.pcl.mvvm.ui.home
 
 import android.widget.ImageView
-import com.bumptech.glide.Glide
+import coil.load
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.module.LoadMoreModule
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
@@ -24,7 +24,7 @@ class HomeListAdapter : BaseQuickAdapter<ArticlesBean, BaseViewHolder>(R.layout.
             setText(R.id.tv_project_list_atticle_auther, item.author)
             val imageView = holder.getView<ImageView>(R.id.iv_project_list_atticle_ic)
             if (!item.envelopePic.isNullOrEmpty()) {
-                Glide.with(imageView).load(item.envelopePic).into(imageView)
+                imageView.load(item.envelopePic)
             }
         }
     }

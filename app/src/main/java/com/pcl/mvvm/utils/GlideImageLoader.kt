@@ -2,7 +2,7 @@ package com.pcl.mvvm.utils
 
 import android.view.View
 import android.widget.ImageView
-import com.bumptech.glide.Glide
+import coil.load
 import com.pcl.mvvm.network.entity.BannerBean
 import com.stx.xhb.androidx.XBanner
 
@@ -13,7 +13,7 @@ import com.stx.xhb.androidx.XBanner
 class GlideImageLoader : XBanner.XBannerAdapter {
 
     override fun loadBanner(banner: XBanner?, model: Any?, view: View?, position: Int) {
-        Glide.with(banner!!.context).load((model as BannerBean).xBannerUrl).into(view as ImageView)
+        (view as ImageView).load((model as BannerBean).xBannerUrl.toString())
     }
 
 }

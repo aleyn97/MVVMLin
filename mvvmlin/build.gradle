@@ -23,6 +23,14 @@ android {
         }
     }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }
 
 dependencies {
@@ -34,9 +42,8 @@ dependencies {
     //material-dialogs
     api rootProject.ext.dependencies["material-dialogs-core"]
     api rootProject.ext.dependencies["material-dialogs-lifecycle"]
-    //glide
-    api rootProject.ext.dependencies.glide
-    kapt rootProject.ext.dependencies["glide-compiler"]
+    //coil
+    api rootProject.ext.dependencies.coil
     // utils 集合了大量常用的工具类
     api rootProject.ext.dependencies.utilcodex
 }

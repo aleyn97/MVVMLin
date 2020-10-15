@@ -12,9 +12,15 @@ Github上关于MVVM的框架也不少，之前一直在用RxJava +Retrofit 用MV
 - **特点**
 使用Rxjava 处理不好的话会有内存泄露的风险，我们会用使用**AutoDispose、RxLifecycle**等方式来处理，但是使用协程来请求数据，完全不用担心这个问题，所有请求都是在**viewModelScope**中启动，当页面销毁的时候，会统一取消，不用关心这个问题了。用Kotlin封装，大量语法糖可心使用。
 - 	**引入第三方库**
+
 [AndroidUtilCode](https://github.com/Blankj/AndroidUtilCode)：包含了大量的常用工具类，简直是必备神器啊。
+
 [material-dialogs](https://github.com/afollestad/material-dialogs)：弹窗
-[glide](https://github.com/bumptech/glide)：图片加载
+
+~~[glide](https://github.com/bumptech/glide)：图片加载(弃用1.0.5)~~
+
+[coil](https://github.com/coil-kt/coil)：图片加载(更适合KT的图片加载)
+
 [Retrofit](https://github.com/bumptech/glide)：网络请求
 ### 1，如何使用
 ##### 1.1 启用databinding
@@ -29,7 +35,7 @@ dataBinding {
 ```
 dependencies {
     ...
-   implementation 'me.aleyn:MVVMLin:1.0.4'
+   implementation 'me.aleyn:MVVMLin:1.0.5'
 }
 ```
 或者 下载到本地导入Module

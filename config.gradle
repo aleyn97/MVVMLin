@@ -6,8 +6,8 @@ ext {
             applicationId    : "com.pcl.mvvm",
             minSdkVersion    : 19,
             targetSdkVersion : 28,
-            versionCode      : 5,
-            versionName      : "1.0.4",
+            versionCode      : 6,
+            versionName      : "1.0.5",
     ]
     //version配置
     versions = [
@@ -62,9 +62,8 @@ ext {
 
     //依赖第三方配置
     dependencies = [
-            //glide图片加载
-            glide                       : "com.github.bumptech.glide:glide:4.11.0",
-            "glide-compiler"            : "com.github.bumptech.glide:compiler:4.11.0",
+            //图片加载
+            "coil"                      : 'io.coil-kt:coil:1.0.0-rc3',
             //material-dialogs
             "material-dialogs-lifecycle": "com.afollestad.material-dialogs:lifecycle:3.1.1",
             "material-dialogs-core"     : "com.afollestad.material-dialogs:core:3.1.1",
