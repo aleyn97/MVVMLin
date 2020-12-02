@@ -1,17 +1,28 @@
 package com.aleyn.mvvm.app
 
+import okhttp3.OkHttpClient
+import retrofit2.Retrofit
+
 /**
  *   @auther : Aleyn
- *   time   : 2019/11/12
+ *   time   : 2020/11/26
  */
 object MVVMLin {
 
-    private lateinit var mConfig: GlobalConfig
+    private var globalConfig: GlobalConfig? = null
 
-    fun install(config: GlobalConfig) {
-        mConfig = config
+    private val DEFAULT = object : GlobalConfig {
+        override fun provideRetrofit(build: Retrofit.Builder) {
+        }
+
+        override fun provideOkHttpClient(build: OkHttpClient.Builder) {
+        }
     }
 
-    fun getConfig() = mConfig
+    fun install(config: GlobalConfig) {
+        globalConfig = config
+    }
+
+    fun getConfig() = globalConfig ?: DEFAULT
 
 }

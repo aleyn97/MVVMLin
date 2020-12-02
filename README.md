@@ -1,14 +1,18 @@
-# MVVMLin
+# MVVMLin(hilt)
 一个基于MVVM用Kotlin+Retrofit+协程+Databinding+LiveData来封装的快速开发框架：
 项目地址：[MVVMLin](https://github.com/AleynP/MVVMLin)
 
 Github上关于MVVM的框架也不少，之前一直在用RxJava +Retrofit 用MVP模式来做项目，现在AndroidX 是大势所趋，Kotlin已经成官方语言两年了，今年GoogleIO大会又出了新东西，哎~~~~学不动了呀。近期项目不太忙，把这几个新东西结合起来，封装了一个MVVM的框架，分享出来给大家献丑了。
-抛弃了强大的RxJava，心里还是有点虚的。
+
+**此版本是 用 hilt 做依赖注入**
+
 ### 框架简介
+
  - **使用技术**
- 基于MVVM模式用了 kotlin+协程+retrofit+livedata+DataBinding
+ 基于MVVM模式用了 kotlin + 协程 + retrofit + livedata + DataBinding + hilt
+
  - **基本封装**
- 封装了BaseActivity、BaseFragment、BaseViewModel基于协和的网络请方式更加方便，考虑到有些小伙伴不太喜欢用DataBinding在xml中绑定数据的方式，也提供了相应的适配，两种方式自行选择。Retrofit2.6提供了对协程的支持，使用起来更加方便，不用考虑类型的转换了。
+ 封装了BaseActivity、BaseFragment、BaseViewModel基于协和的网络请方式更加方便，考虑到有些小伙伴不太喜欢用DataBinding在xml中绑定数据的方式，也提供了相应的适配，两种方式自行选择。Retrofit 2.6 以后提供了对协程的支持，使用起来更加方便，不用考虑类型的转换了。
 - **特点**
 使用Rxjava 处理不好的话会有内存泄露的风险，我们会用使用**AutoDispose、RxLifecycle**等方式来处理，但是使用协程来请求数据，完全不用担心这个问题，所有请求都是在**viewModelScope**中启动，当页面销毁的时候，会统一取消，不用关心这个问题了。用Kotlin封装，大量语法糖可心使用。
 - 	**引入第三方库**
@@ -45,9 +49,37 @@ dependencies {
 apply from: "config.gradle"
 ```
 ### 2，快速开始
+#### 2.1 Application
+```
+@HiltAndroidApp
+class MyApplication : Application() {
+
+    override fun attachBaseContext(base: Context?) {
+        super.attachBaseContext(base)
+        MVVMLin.install(object : GlobalConfig {
+            override fun provideRetrofit(build: Retrofit.Builder) {
+                        build.baseUrl(Constant.BASE_URL)
+            }
+
+            override fun provideOkHttpClient(build: OkHttpClient.Builder) {
+            }
+        })
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+    }
+}
+```
+1，@HiltAndroidApp 是 hilt 注解;
+2，MVVMLin.install() 可以在 注入之前加入一些全局配置;
+3，GlobalConfig接口：provideRetrofit 是 retrofit 配置、provideOkHttpClient 是 okhttp的配置、
+ viewModelFactory 是viewModel 的工厂类、globalHandleException 不想用默认的错误处理 可以 在此处使用自定义的
+
 #### 2.1Activity
 继承BaseActivity
 ```
+@AndroidEntryPoint
 class DetailActivity : BaseActivity<NoViewModel, ViewDataBinding>() {
 	override fun layoutId() = R.layout.activity_detail
 
@@ -60,6 +92,7 @@ class DetailActivity : BaseActivity<NoViewModel, ViewDataBinding>() {
     }
 }
 ```
+@AndroidEntryPoint 是 hilt 的注解
 第一个泛型是VIewModel,如果页面很简单不需要ViewModel，直接传入NoViewModel即可。
 第二个泛型是Databinding,如果页面使用Databinding的话，就要传对应生成的Binding类，如果这个页面不使用DataBinding，传ViewDataBinding基类不用初始化mBinding而会使用常规方式。
  **layoutId()** 方法返回对应布局
@@ -67,6 +100,7 @@ class DetailActivity : BaseActivity<NoViewModel, ViewDataBinding>() {
 ##### 2.2 Fragment
 继承BaseFragment
 ```
+@AndroidEntryPoint
 class HomeFragment : BaseFragment<HomeViewModel, ViewDataBinding>() {
 		override fun layoutId() = R.layout.home_fragment
 		override fun initView(savedInstanceState: Bundle?) {  }
@@ -100,15 +134,26 @@ class ProjectFragment : BaseFragment<ProjectViewModel, ProjectFragmentBinding>()
 ##### 2.3 ViewModel
 继承BaseViewModel
 ```
-class HomeViewModel : BaseViewModel() {
+class HomeViewModel @ViewModelInject constructor(
+    private val homeRepository: HomeRepository
+) : BaseViewModel() {
 		.........
 }
 ```
-如果一个页面内容很少，不需要ViewModel，我们可能不想再建一个ViewModel类，泛型传**NoViewModel**即可。
-**BaseVIewModel** 中对协程进行了简单封装，**BaseViewMode** 已经做了对网络请求异常的统一处理。比如我们的网络请求可以这样写：
+@ViewModelInject : hilt 的注解，主要用来生成重写 getDefaultViewModelProviderFactory 方法， 如果ViewModel 不需要 注入 HomeRepository 外部类  可不加此注解 如下：
+
 ```
 class HomeViewModel : BaseViewModel() {
-    private val homeRepository by lazy { InjectorUtil.getHomeRepository() }
+		........
+}
+```
+
+**BaseVIewModel** 中对协程进行了简单封装，**BaseViewMode** 已经做了对网络请求异常的统一处理。比如我们的网络请求可以这样写：
+
+```
+class HomeViewModel @ViewModelInject constructor(
+    private val homeRepository: HomeRepository
+) : BaseViewModel() {
     val mBanners = MutableLiveData<List<BannerBean>>()
     fun getBanner() {
     	//只返回结果，其他全抛自定义异常
@@ -120,8 +165,9 @@ class HomeViewModel : BaseViewModel() {
 ```
 那如果我们想自己处理错误怎么办？
 ```
-class HomeViewModel : BaseViewModel() {
-    private val homeRepository by lazy { InjectorUtil.getHomeRepository() }
+class HomeViewModel @ViewModelInject constructor(
+    private val homeRepository: HomeRepository
+) : BaseViewModel() {
     val mBanners = MutableLiveData<List<BannerBean>>()
     fun getBanner() {
         launchOnlyresult({ homeRepository.getBannerData() }, {
@@ -136,8 +182,9 @@ class HomeViewModel : BaseViewModel() {
 
 另一种不过滤返回结果的方式：
 ```
-class MeViewModel : BaseViewModel() {
-    private val homeRepository by lazy { InjectorUtil.getHomeRepository() }
+class HomeViewModel @ViewModelInject constructor(
+    private val homeRepository: HomeRepository
+) : BaseViewModel() {
     var popularWeb = MutableLiveData<List<UsedWeb>>()
     fun getPopularWeb() {
         launch({

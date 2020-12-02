@@ -2,14 +2,15 @@ package com.pcl.mvvm.ui.me
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.aleyn.mvvm.base.BaseFragment
 import com.pcl.mvvm.R
 import com.pcl.mvvm.databinding.MeFragmentBinding
 import com.pcl.mvvm.ui.detail.DetailActivity
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.me_fragment.*
 
+@AndroidEntryPoint
 class MeFragment : BaseFragment<MeViewModel, MeFragmentBinding>() {
 
     private val mAdapter by lazy { MeWebAdapter() }
@@ -25,7 +26,7 @@ class MeFragment : BaseFragment<MeViewModel, MeFragmentBinding>() {
             layoutManager = LinearLayoutManager(context)
             adapter = mAdapter
         }
-        viewModel.popularWeb.observe(viewLifecycleOwner, Observer {
+        viewModel.popularWeb.observe(viewLifecycleOwner, {
             mAdapter.setNewInstance(it)
         })
         mAdapter.setOnItemClickListener { _, _, position ->

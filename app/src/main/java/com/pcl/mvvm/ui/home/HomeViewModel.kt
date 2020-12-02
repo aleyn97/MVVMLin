@@ -1,14 +1,15 @@
 package com.pcl.mvvm.ui.home
 
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.MutableLiveData
 import com.aleyn.mvvm.base.BaseViewModel
+import com.pcl.mvvm.data.HomeRepository
 import com.pcl.mvvm.network.entity.BannerBean
 import com.pcl.mvvm.network.entity.HomeListBean
-import com.pcl.mvvm.utils.InjectorUtil
 
-class HomeViewModel : BaseViewModel() {
-
-    private val homeRepository by lazy { InjectorUtil.getHomeRepository() }
+class HomeViewModel @ViewModelInject constructor(
+    private val homeRepository: HomeRepository
+) : BaseViewModel() {
 
     private val mBanners = MutableLiveData<List<BannerBean>>()
 

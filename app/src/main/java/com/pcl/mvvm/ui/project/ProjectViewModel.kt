@@ -1,6 +1,7 @@
 package com.pcl.mvvm.ui.project
 
 import androidx.databinding.ObservableArrayList
+import androidx.hilt.lifecycle.ViewModelInject
 import com.aleyn.mvvm.base.BaseViewModel
 import com.aleyn.mvvm.event.Message
 import com.aleyn.mvvm.network.ExceptionHandle
@@ -9,9 +10,9 @@ import com.blankj.utilcode.util.LogUtils
 import com.google.android.material.tabs.TabLayout
 import com.pcl.mvvm.BR
 import com.pcl.mvvm.R
+import com.pcl.mvvm.data.HomeRepository
 import com.pcl.mvvm.network.entity.ArticlesBean
 import com.pcl.mvvm.network.entity.NavTypeBean
-import com.pcl.mvvm.utils.InjectorUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -22,9 +23,10 @@ import me.tatarka.bindingcollectionadapter2.ItemBinding
  *   @auther : Aleyn
  *   time   : 2019/11/12
  */
-class ProjectViewModel : BaseViewModel() {
+class ProjectViewModel @ViewModelInject constructor(
+    private val homeRepository: HomeRepository
+) : BaseViewModel() {
 
-    private val homeRepository by lazy { InjectorUtil.getHomeRepository() }
     private val itemOnClickListener = object : OnItemClickListener {
         override fun onItemClick(item: ArticlesBean) {
             defUI.msgEvent.postValue(Message(0, obj = item))

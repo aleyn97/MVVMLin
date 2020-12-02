@@ -1,11 +1,15 @@
 package com.aleyn.mvvm.network
 
 import android.net.ParseException
+import com.aleyn.mvvm.app.MVVMLin
 import com.google.gson.JsonParseException
 import com.google.gson.stream.MalformedJsonException
 import org.json.JSONException
 import retrofit2.HttpException
 import java.net.ConnectException
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
+import javax.net.ssl.SSLException
 
 /**
  *   @auther : Aleyn
@@ -14,28 +18,21 @@ import java.net.ConnectException
 object ExceptionHandle {
 
     fun handleException(e: Throwable): ResponseThrowable {
-        val ex: ResponseThrowable
-        if (e is ResponseThrowable) {
-            ex = e
-        } else if (e is HttpException) {
-            ex = ResponseThrowable(ERROR.HTTP_ERROR, e)
-        } else if (e is JsonParseException
-            || e is JSONException
-            || e is ParseException || e is MalformedJsonException
-        ) {
-            ex = ResponseThrowable(ERROR.PARSE_ERROR, e)
-        } else if (e is ConnectException) {
-            ex = ResponseThrowable(ERROR.NETWORD_ERROR, e)
-        } else if (e is javax.net.ssl.SSLException) {
-            ex = ResponseThrowable(ERROR.SSL_ERROR, e)
-        } else if (e is java.net.SocketTimeoutException) {
-            ex = ResponseThrowable(ERROR.TIMEOUT_ERROR, e)
-        } else if (e is java.net.UnknownHostException) {
-            ex = ResponseThrowable(ERROR.TIMEOUT_ERROR, e)
-        } else {
-            ex = if (!e.message.isNullOrEmpty()) ResponseThrowable(1000, e.message!!, e)
-            else ResponseThrowable(ERROR.UNKNOWN, e)
+        return MVVMLin.getConfig().globalHandleException(e) ?: when (e) {
+            is ResponseThrowable -> e
+            is HttpException -> ResponseThrowable(ERROR.HTTP_ERROR, e)
+            is JsonParseException,
+            is JSONException,
+            is ParseException,
+            is MalformedJsonException -> ResponseThrowable(ERROR.PARSE_ERROR, e)
+            is ConnectException -> ResponseThrowable(ERROR.NETWORD_ERROR, e)
+            is SSLException -> ResponseThrowable(ERROR.SSL_ERROR, e)
+            is SocketTimeoutException -> ResponseThrowable(ERROR.TIMEOUT_ERROR, e)
+            is UnknownHostException -> ResponseThrowable(ERROR.TIMEOUT_ERROR, e)
+            else -> {
+                if (!e.message.isNullOrEmpty()) ResponseThrowable(1000, e.message!!, e)
+                else ResponseThrowable(ERROR.UNKNOWN, e)
+            }
         }
-        return ex
     }
 }

@@ -9,10 +9,12 @@ import com.pcl.mvvm.R
 import com.pcl.mvvm.ui.home.HomeFragment
 import com.pcl.mvvm.ui.me.MeFragment
 import com.pcl.mvvm.ui.project.ProjectFragment
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.*
 import me.majiajie.pagerbottomtabstrip.listener.OnTabItemSelectedListener
 
 @Suppress("DEPRECATION")
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private val fragments = ArrayList<Fragment>()

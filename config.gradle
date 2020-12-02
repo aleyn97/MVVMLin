@@ -1,31 +1,31 @@
 ext {
     //android开发版本配置
     android = [
-            compileSdkVersion: 28,
-            buildToolsVersion: "28.0.3",
+            compileSdkVersion: 29,
+            buildToolsVersion: "29.0.3",
             applicationId    : "com.pcl.mvvm",
             minSdkVersion    : 19,
-            targetSdkVersion : 28,
+            targetSdkVersion : 29,
             versionCode      : 6,
             versionName      : "1.0.5",
     ]
     //version配置
     versions = [
-            appcompat : "1.1.0",
-            material  : '1.1.0',
-            junit     : "4.12",
-            extensions: '2.2.0',
-            constraint: '1.1.3',
-            annotation: '1.1.0',
-            dagger2   : '2.26',
-            room      : '2.2.5'
+            appcompat  : "1.2.0",
+            material   : '1.2.1',
+            junit      : "4.12",
+            extensions : '2.2.0',
+            constraint : '2.0.4',
+            annotation : '1.1.0',
+            room       : '2.2.5',
+            hiltVersion: "2.28-alpha"
     ]
 
     //androidx
     androidx = [
             appcompat          : "androidx.appcompat:appcompat:${versions['appcompat']}",
             material           : "com.google.android.material:material:${versions['material']}",
-            'core-ktx'         : "androidx.core:core-ktx:1.3.1",
+            'core-ktx'         : "androidx.core:core-ktx:1.3.2",
             'constraint-layout': "androidx.constraintlayout:constraintlayout:${versions["constraint"]}",
             //viewModel and LiveData
             extensions         : "androidx.lifecycle:lifecycle-extensions:${versions['extensions']}",
@@ -41,17 +41,16 @@ ext {
 
     //network
     retrofit = [
-            retrofit        : "com.squareup.retrofit2:retrofit:2.6.0",
-            "converter-gson": "com.squareup.retrofit2:converter-gson:2.6.0",
+            retrofit        : "com.squareup.retrofit2:retrofit:2.9.0",
+            "converter-gson": "com.squareup.retrofit2:converter-gson:2.9.0",
     ]
 
-    dagger2 = [
-            "dagger-android"          : "com.google.dagger:dagger-android:${versions["dagger2"]}",
-            "dagger-android-support"  : "com.google.dagger:dagger-android-support:${versions["dagger2"]}",
-            "dagger-compiler"         : "com.google.dagger:dagger-compiler:${versions["dagger2"]}",
-            "dagger-android-processor": "com.google.dagger:dagger-android-processor:${versions["dagger2"]}"
+    hilt = [
+            'android'         : "com.google.dagger:hilt-android:${versions["hiltVersion"]}",
+            'android-compiler': "com.google.dagger:hilt-android-compiler:${versions["hiltVersion"]}",
+            'viewmodel'       : "androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha02",
+            'compiler'        : "androidx.hilt:hilt-compiler:1.0.0-alpha02",
     ]
-
 
     room = [
             'room-runtime' : "androidx.room:room-runtime:${versions["room"]}",
@@ -63,12 +62,12 @@ ext {
     //依赖第三方配置
     dependencies = [
             //图片加载
-            "coil"                      : 'io.coil-kt:coil:1.0.0-rc3',
+            "coil"                      : 'io.coil-kt:coil:1.1.0',
             //material-dialogs
             "material-dialogs-lifecycle": "com.afollestad.material-dialogs:lifecycle:3.1.1",
             "material-dialogs-core"     : "com.afollestad.material-dialogs:core:3.1.1",
             //Utils
-            utilcodex                   : 'com.blankj:utilcodex:1.29.0',
+            utilcodex                   : 'com.blankj:utilcodex:1.30.5',
             banner                      : 'com.github.xiaohaibin:XBanner:androidx_v1.0.2',
             'bottom-tab'                : 'me.majiajie:pager-bottom-tab-strip:2.3.0X',
             BRVAH                       : 'com.github.CymChad:BaseRecyclerViewAdapterHelper:3.0.2',

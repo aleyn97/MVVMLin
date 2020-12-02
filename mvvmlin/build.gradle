@@ -2,7 +2,8 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'com.novoda.bintray-release'
+apply plugin: 'dagger.hilt.android.plugin'
+//apply plugin: 'com.novoda.bintray-release'
 
 android {
     compileSdkVersion rootProject.ext.android.compileSdkVersion
@@ -46,8 +47,14 @@ dependencies {
     api rootProject.ext.dependencies.coil
     // utils 集合了大量常用的工具类
     api rootProject.ext.dependencies.utilcodex
+
+    api rootProject.ext.hilt["android"]
+    kapt rootProject.ext.hilt["android-compiler"]
+    api rootProject.ext.hilt["viewmodel"]
+    kapt rootProject.ext.hilt["compiler"]
 }
 
+/*
 publish {
     repoName = 'aleyn'
     userOrg = 'aleyn'
@@ -56,4 +63,4 @@ publish {
     publishVersion = rootProject.ext.android.versionName
     desc = 'An Android MVVM framework'
     website = 'https://github.com/AleynP/MVVMLin'
-}
+}*/

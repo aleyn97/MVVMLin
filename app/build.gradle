@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'dagger.hilt.android.plugin'
 
 android {
     compileSdkVersion rootProject.ext.android.compileSdkVersion
@@ -53,4 +54,8 @@ dependencies {
     kapt rootProject.ext.room["room-compiler"]
     testImplementation rootProject.ext.room["room-testing"]
 
+    api rootProject.ext.hilt["android"]
+    kapt rootProject.ext.hilt["android-compiler"]
+    api rootProject.ext.hilt["viewmodel"]
+    kapt rootProject.ext.hilt["compiler"]
 }

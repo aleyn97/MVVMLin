@@ -17,19 +17,4 @@ import com.pcl.mvvm.network.entity.HomeListBean
 abstract class LinDatabase : RoomDatabase() {
 
     abstract fun homeLocaData(): HomeDao
-
-
-    companion object {
-        fun getInstanse() = SingletonHolder.INSTANCE
-    }
-
-    private object SingletonHolder {
-        val INSTANCE = Room.databaseBuilder(
-                Utils.getApp(),
-                LinDatabase::class.java,
-                "lin_db"
-            )
-            .addMigrations(MIGRATION.MIGRATION_1_2)
-            .build()
-    }
 }

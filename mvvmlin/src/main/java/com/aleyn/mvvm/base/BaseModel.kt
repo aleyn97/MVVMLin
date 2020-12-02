@@ -1,12 +1,17 @@
 package com.aleyn.mvvm.base
 
+import com.aleyn.mvvm.app.DataSourceManager
 import com.aleyn.mvvm.network.ResponseThrowable
+import javax.inject.Inject
 
 /**
  *   @auther : Aleyn
  *   time   : 2019/11/01
  */
 abstract class BaseModel {
+
+    @Inject
+    lateinit var manager: DataSourceManager
 
     /**
      * @param remoto 网络数据
@@ -31,6 +36,8 @@ abstract class BaseModel {
         }
     }
 
-    fun onCleared() {
-    }
+    /**
+     * 获取 Service
+     */
+    inline fun <reified T> netWork() = manager.remoteService(T::class.java)
 }

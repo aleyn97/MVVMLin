@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import androidx.databinding.ViewDataBinding
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.aleyn.mvvm.base.BaseFragment
 import com.pcl.mvvm.R
@@ -13,12 +12,14 @@ import com.pcl.mvvm.network.entity.ArticlesBean
 import com.pcl.mvvm.ui.detail.DetailActivity
 import com.pcl.mvvm.utils.GlideImageLoader
 import com.stx.xhb.androidx.XBanner
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.home_fragment.*
 
 /**
  *   @auther : Aleyn
  *   time   : 2019/11/02
  */
+@AndroidEntryPoint
 class HomeFragment : BaseFragment<HomeViewModel, ViewDataBinding>() {
 
     private val mAdapter by lazy { HomeListAdapter() }
@@ -60,11 +61,11 @@ class HomeFragment : BaseFragment<HomeViewModel, ViewDataBinding>() {
     override fun lazyLoadData() {
         viewModel.run {
 
-            getBanner().observe(this@HomeFragment, Observer {
+            getBanner().observe(this@HomeFragment, {
                 banner.setBannerData(it)
             })
 
-            getHomeList(page).observe(this@HomeFragment, Observer {
+            getHomeList(page).observe(this@HomeFragment, {
                 if (srl_home.isRefreshing) srl_home.isRefreshing = false
                 it?.let {
                     if (it.curPage == 1) mAdapter.setNewInstance(it.datas)

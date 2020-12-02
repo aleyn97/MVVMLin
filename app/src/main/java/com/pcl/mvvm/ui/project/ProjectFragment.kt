@@ -2,15 +2,19 @@ package com.pcl.mvvm.ui.project
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.lifecycle.ViewModelProvider
 import com.aleyn.mvvm.base.BaseFragment
+import com.aleyn.mvvm.base.ViewModelFactory
 import com.aleyn.mvvm.event.Message
 import com.pcl.mvvm.R
 import com.pcl.mvvm.databinding.ProjectFragmentBinding
 import com.pcl.mvvm.network.entity.ArticlesBean
 import com.pcl.mvvm.ui.detail.DetailActivity
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 
+@AndroidEntryPoint
 class ProjectFragment : BaseFragment<ProjectViewModel, ProjectFragmentBinding>() {
 
 

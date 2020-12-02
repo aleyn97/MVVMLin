@@ -4,6 +4,9 @@ import android.app.Application
 import android.content.Context
 import com.aleyn.mvvm.app.GlobalConfig
 import com.aleyn.mvvm.app.MVVMLin
+import com.aleyn.mvvm.di.AppModule
+import okhttp3.OkHttpClient
+import retrofit2.Retrofit
 
 /**
  *   @auther : Aleyn
@@ -11,10 +14,4 @@ import com.aleyn.mvvm.app.MVVMLin
  */
 open class BaseApplication : Application() {
 
-    override fun attachBaseContext(base: Context?) {
-        super.attachBaseContext(base)
-        MVVMLin.install(GlobalConfig().apply {
-            viewModelFactory = ViewModelFactory()
-        })
-    }
 }
