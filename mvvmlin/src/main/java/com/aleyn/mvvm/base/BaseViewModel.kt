@@ -1,5 +1,6 @@
 package com.aleyn.mvvm.base
 
+import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.viewModelScope
@@ -16,7 +17,9 @@ import kotlinx.coroutines.flow.flow
  *   @auther : Aleyn
  *   time   : 2019/11/01
  */
-open class BaseViewModel : AndroidViewModel(Utils.getApp()), LifecycleObserver {
+open class BaseViewModel(
+    application: Application = Utils.getApp()
+) : AndroidViewModel(application), LifecycleObserver {
 
     val defUI: UIChange by lazy { UIChange() }
 

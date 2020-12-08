@@ -8,8 +8,12 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.annotation.RequiresApi
 import androidx.databinding.ViewDataBinding
+import androidx.lifecycle.SavedStateViewModelFactory
+import androidx.lifecycle.ViewModelProvider
 import com.aleyn.mvvm.base.BaseActivity
+import com.aleyn.mvvm.base.BaseViewModel
 import com.aleyn.mvvm.base.NoViewModel
+import com.aleyn.mvvm.base.ViewModelFactory
 import com.pcl.mvvm.R
 import kotlinx.android.synthetic.main.activity_detail.*
 
