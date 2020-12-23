@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.blankj.utilcode.util.BarUtils
+import com.blankj.utilcode.util.ColorUtils
 import com.blankj.utilcode.util.PermissionUtils
 import com.pcl.mvvm.R
 import com.pcl.mvvm.ui.home.HomeFragment
@@ -13,7 +14,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.*
 import me.majiajie.pagerbottomtabstrip.listener.OnTabItemSelectedListener
 
-@Suppress("DEPRECATION")
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        BarUtils.setStatusBarColor(this, resources.getColor(R.color.colorPrimary))
+        BarUtils.setStatusBarColor(this, ColorUtils.getColor(R.color.colorPrimary))
         initView()
         PermissionUtils.permission(*PermissionUtils.getPermissions().toTypedArray())
             .callback(object : PermissionUtils.FullCallback {

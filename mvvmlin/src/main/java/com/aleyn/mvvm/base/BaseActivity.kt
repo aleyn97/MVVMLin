@@ -11,7 +11,6 @@ import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.aleyn.mvvm.R
 import com.aleyn.mvvm.app.MVVMLin
 import com.aleyn.mvvm.event.Message
-import com.blankj.utilcode.util.LogUtils
 import com.blankj.utilcode.util.ToastUtils
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
@@ -110,9 +109,11 @@ abstract class BaseActivity<VM : BaseViewModel, DB : ViewDataBinding> : AppCompa
     @Suppress("UNCHECKED_CAST")
     private fun createViewModel(tp: Type) {
         val tClass = tp as? Class<VM> ?: BaseViewModel::class.java
-        val viewModelFactory =
-            MVVMLin.getConfig().viewModelFactory() ?: defaultViewModelProviderFactory
-        viewModel = ViewModelProvider(this, viewModelFactory).get(tClass) as VM
+        viewModel = ViewModelProvider(this, defaultViewModelProviderFactory).get(tClass) as VM
+    }
+
+    override fun getDefaultViewModelProviderFactory(): ViewModelProvider.Factory {
+        return MVVMLin.getConfig().viewModelFactory() ?: super.getDefaultViewModelProviderFactory()
     }
 
 }
