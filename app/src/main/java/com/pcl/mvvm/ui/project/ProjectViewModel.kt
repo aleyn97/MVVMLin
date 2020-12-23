@@ -1,9 +1,9 @@
 package com.pcl.mvvm.ui.project
 
 import androidx.databinding.ObservableArrayList
+import com.aleyn.mvvm.app.MVVMLin
 import com.aleyn.mvvm.base.BaseViewModel
 import com.aleyn.mvvm.event.Message
-import com.aleyn.mvvm.network.ExceptionHandle
 import com.aleyn.mvvm.network.ResponseThrowable
 import com.blankj.utilcode.util.LogUtils
 import com.google.android.material.tabs.TabLayout
@@ -61,7 +61,7 @@ class ProjectViewModel : BaseViewModel() {
                 .onCompletion { defUI.dismissDialog.call() }
                 .catch {
                     // 错误处理
-                    val err = ExceptionHandle.handleException(it)
+                    val err = MVVMLin.getConfig().globalExceptionHandle(it)
                     LogUtils.d("${err.code}: ${err.errMsg}")
                 }
                 .collect {

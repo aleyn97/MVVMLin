@@ -1,11 +1,12 @@
 package com.aleyn.mvvm.base
 
+import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.viewModelScope
+import com.aleyn.mvvm.app.MVVMLin
 import com.aleyn.mvvm.event.Message
 import com.aleyn.mvvm.event.SingleLiveEvent
-import com.aleyn.mvvm.network.ExceptionHandle
 import com.aleyn.mvvm.network.ResponseThrowable
 import com.blankj.utilcode.util.Utils
 import kotlinx.coroutines.*
@@ -16,7 +17,9 @@ import kotlinx.coroutines.flow.flow
  *   @auther : Aleyn
  *   time   : 2019/11/01
  */
-open class BaseViewModel : AndroidViewModel(Utils.getApp()), LifecycleObserver {
+open class BaseViewModel(
+    application: Application = Utils.getApp()
+) : AndroidViewModel(application), LifecycleObserver {
 
     val defUI: UIChange by lazy { UIChange() }
 
@@ -113,7 +116,7 @@ open class BaseViewModel : AndroidViewModel(Utils.getApp()), LifecycleObserver {
             try {
                 block()
             } catch (e: Throwable) {
-                error(ExceptionHandle.handleException(e))
+                error(MVVMLin.getConfig().globalExceptionHandle(e))
             } finally {
                 complete()
             }

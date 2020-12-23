@@ -4,12 +4,12 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.customview.customView
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.aleyn.mvvm.R
+import com.aleyn.mvvm.app.MVVMLin
 import com.aleyn.mvvm.event.Message
 import com.blankj.utilcode.util.ToastUtils
 import java.lang.reflect.ParameterizedType
@@ -59,16 +59,16 @@ abstract class BaseActivity<VM : BaseViewModel, DB : ViewDataBinding> : AppCompa
      * 注册 UI 事件
      */
     private fun registorDefUIChange() {
-        viewModel.defUI.showDialog.observe(this, Observer {
+        viewModel.defUI.showDialog.observe(this, {
             showLoading()
         })
-        viewModel.defUI.dismissDialog.observe(this, Observer {
+        viewModel.defUI.dismissDialog.observe(this, {
             dismissLoading()
         })
-        viewModel.defUI.toastEvent.observe(this, Observer {
+        viewModel.defUI.toastEvent.observe(this, {
             ToastUtils.showShort(it)
         })
-        viewModel.defUI.msgEvent.observe(this, Observer {
+        viewModel.defUI.msgEvent.observe(this, {
             handleEvent(it)
         })
     }
@@ -79,16 +79,13 @@ abstract class BaseActivity<VM : BaseViewModel, DB : ViewDataBinding> : AppCompa
      * 打开等待框
      */
     private fun showLoading() {
-        if (dialog == null) {
-            dialog = MaterialDialog(this)
-                .cancelable(false)
-                .cornerRadius(8f)
-                .customView(R.layout.custom_progress_dialog_view, noVerticalPadding = true)
-                .lifecycleOwner(this)
-                .maxWidth(R.dimen.dialog_width)
-        }
-        dialog?.show()
-
+        (dialog ?: MaterialDialog(this)
+            .cancelable(false)
+            .cornerRadius(8f)
+            .customView(R.layout.custom_progress_dialog_view, noVerticalPadding = true)
+            .lifecycleOwner(this)
+            .maxWidth(R.dimen.dialog_width))
+            .show()
     }
 
     /**
@@ -108,8 +105,13 @@ abstract class BaseActivity<VM : BaseViewModel, DB : ViewDataBinding> : AppCompa
         if (type is ParameterizedType) {
             val tp = type.actualTypeArguments[0]
             val tClass = tp as? Class<VM> ?: BaseViewModel::class.java
-            viewModel = ViewModelProvider(this, ViewModelFactory()).get(tClass) as VM
+            viewModel = ViewModelProvider(viewModelStore, defaultViewModelProviderFactory)
+                .get(tClass) as VM
         }
+    }
+
+    override fun getDefaultViewModelProviderFactory(): ViewModelProvider.Factory {
+        return MVVMLin.getConfig().viewModelFactory() ?: super.getDefaultViewModelProviderFactory()
     }
 
 }

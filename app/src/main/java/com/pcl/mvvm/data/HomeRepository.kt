@@ -27,7 +27,7 @@ class HomeRepository private constructor(
             if (refresh) localData.deleteBannerAll()
             localData.insertBanner(it)
         }, {
-            !refresh && it != null && it.isNotEmpty()
+            !refresh && !it.isNullOrEmpty()
         })
     }
 
@@ -40,7 +40,7 @@ class HomeRepository private constructor(
             if (refresh) localData.deleteHomeAll()
             localData.insertData(it)
         }, {
-            !refresh && it != null
+            !refresh
         })
     }
 

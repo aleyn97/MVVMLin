@@ -8,12 +8,12 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.customview.customView
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.aleyn.mvvm.R
+import com.aleyn.mvvm.app.MVVMLin
 import com.aleyn.mvvm.event.Message
 import com.blankj.utilcode.util.ToastUtils
 import java.lang.reflect.ParameterizedType
@@ -86,16 +86,16 @@ abstract class BaseFragment<VM : BaseViewModel, DB : ViewDataBinding> : Fragment
      * 注册 UI 事件
      */
     private fun registorDefUIChange() {
-        viewModel.defUI.showDialog.observe(viewLifecycleOwner, Observer {
+        viewModel.defUI.showDialog.observe(viewLifecycleOwner, {
             showLoading()
         })
-        viewModel.defUI.dismissDialog.observe(viewLifecycleOwner, Observer {
+        viewModel.defUI.dismissDialog.observe(viewLifecycleOwner, {
             dismissLoading()
         })
-        viewModel.defUI.toastEvent.observe(viewLifecycleOwner, Observer {
+        viewModel.defUI.toastEvent.observe(viewLifecycleOwner, {
             ToastUtils.showShort(it)
         })
-        viewModel.defUI.msgEvent.observe(viewLifecycleOwner, Observer {
+        viewModel.defUI.msgEvent.observe(viewLifecycleOwner, {
             handleEvent(it)
         })
     }
@@ -138,8 +138,13 @@ abstract class BaseFragment<VM : BaseViewModel, DB : ViewDataBinding> : Fragment
         if (type is ParameterizedType) {
             val tp = type.actualTypeArguments[0]
             val tClass = tp as? Class<VM> ?: BaseViewModel::class.java
-            viewModel = ViewModelProvider(viewModelStore, ViewModelFactory()).get(tClass) as VM
+            viewModel = ViewModelProvider(viewModelStore, defaultViewModelProviderFactory)
+                .get(tClass) as VM
         }
+    }
+
+    override fun getDefaultViewModelProviderFactory(): ViewModelProvider.Factory {
+        return MVVMLin.getConfig().viewModelFactory() ?: super.getDefaultViewModelProviderFactory()
     }
 
 }

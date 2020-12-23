@@ -1,8 +1,10 @@
 package com.pcl.mvvm.ui
 
+import android.content.res.Resources
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.blankj.utilcode.util.AdaptScreenUtils
 import com.blankj.utilcode.util.BarUtils
 import com.blankj.utilcode.util.PermissionUtils
 import com.pcl.mvvm.R
@@ -36,6 +38,10 @@ class MainActivity : AppCompatActivity() {
 
             })
             .request()
+    }
+
+    override fun getResources(): Resources {
+        return AdaptScreenUtils.adaptWidth(super.getResources(), 1080)
     }
 
     private fun initView() {

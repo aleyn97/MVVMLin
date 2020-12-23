@@ -6,7 +6,7 @@ import com.aleyn.mvvm.base.IBaseResponse
  *   @auther : Aleyn
  *   time   : 2019/08/12
  */
-class ResponseThrowable : Exception {
+open class ResponseThrowable : Exception {
     var code: Int
     var errMsg: String
 

@@ -21,13 +21,12 @@ abstract class BaseModel {
         isUseCache: (T?) -> Boolean = { true }
     ): T {
         val localData = local.invoke()
-        if (isUseCache(localData)) return localData!!
+        return if (isUseCache(localData) && localData != null) localData
         else {
-            val net = remoto()
-            if (net.isSuccess()) {
-                return net.data()!!.also { save(it) }
+            remoto().let { net ->
+                if (net.isSuccess()) net.data().also { save(it) }
+                throw ResponseThrowable(net)
             }
-            throw ResponseThrowable(net)
         }
     }
 
