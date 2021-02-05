@@ -1,19 +1,23 @@
 package com.pcl.mvvm.utils
 
-import android.view.View
-import android.widget.ImageView
 import coil.load
 import com.pcl.mvvm.network.entity.BannerBean
-import com.stx.xhb.androidx.XBanner
+import com.youth.banner.adapter.BannerImageAdapter
+import com.youth.banner.holder.BannerImageHolder
 
 /**
  *   @auther : Aleyn
  *   time   : 2019/09/05
  */
-class GlideImageLoader : XBanner.XBannerAdapter {
+class GlideImageLoader : BannerImageAdapter<BannerBean>(null) {
 
-    override fun loadBanner(banner: XBanner?, model: Any?, view: View?, position: Int) {
-        (view as ImageView).load((model as BannerBean).xBannerUrl.toString())
+    override fun onBindView(
+        holder: BannerImageHolder?,
+        data: BannerBean?,
+        position: Int,
+        size: Int
+    ) {
+        holder?.imageView?.load(data?.imagePath)
     }
 
 }

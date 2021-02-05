@@ -7,7 +7,6 @@ import com.aleyn.mvvm.base.BaseFragment
 import com.pcl.mvvm.R
 import com.pcl.mvvm.databinding.MeFragmentBinding
 import com.pcl.mvvm.ui.detail.DetailActivity
-import kotlinx.android.synthetic.main.me_fragment.*
 
 class MeFragment : BaseFragment<MeViewModel, MeFragmentBinding>() {
 
@@ -20,7 +19,7 @@ class MeFragment : BaseFragment<MeViewModel, MeFragmentBinding>() {
     override fun layoutId() = R.layout.me_fragment
 
     override fun initView(savedInstanceState: Bundle?) {
-        with(rv_me_uesd_web) {
+        with(mBinding.rvMeUesdWeb) {
             layoutManager = LinearLayoutManager(context)
             adapter = mAdapter
         }

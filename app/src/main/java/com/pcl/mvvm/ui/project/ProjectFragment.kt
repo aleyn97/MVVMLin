@@ -21,7 +21,7 @@ class ProjectFragment : BaseFragment<ProjectViewModel, ProjectFragmentBinding>()
     override fun layoutId() = R.layout.project_fragment
 
     override fun initView(savedInstanceState: Bundle?) {
-        mBinding?.viewModel = viewModel
+        mBinding.viewModel = viewModel
     }
 
     @FlowPreview

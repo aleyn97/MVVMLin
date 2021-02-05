@@ -1,21 +1,27 @@
+import com.aleyn.AndroidX
+import com.aleyn.BuildConfig
+import com.aleyn.Depend
+import com.aleyn.Retrofit
+
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'com.novoda.bintray-release'
 
 android {
-    compileSdkVersion rootProject.ext.android.compileSdkVersion
+    compileSdkVersion BuildConfig.compileSdkVersion
     defaultConfig {
-        minSdkVersion rootProject.ext.android.minSdkVersion
-        targetSdkVersion rootProject.ext.android.targetSdkVersion
-        versionCode rootProject.ext.android.versionCode
-        versionName rootProject.ext.android.versionName
+        minSdkVersion BuildConfig.minSdkVersion
+        targetSdkVersion BuildConfig.compileSdkVersion
+        versionCode BuildConfig.versionCode
+        versionName BuildConfig.versionName
     }
     dataBinding {
         enabled true
     }
-
+    viewBinding {
+        enabled = true
+    }
     buildTypes {
         release {
             minifyEnabled false
@@ -36,16 +42,16 @@ android {
 dependencies {
     api fileTree(dir: 'libs', include: ['*.jar'])
     //androidx
-    api rootProject.ext.androidxs
+    api AndroidX.values
     //network
-    api rootProject.ext.network
+    api Retrofit.values
     //material-dialogs
-    api rootProject.ext.dependencies["material-dialogs-core"]
-    api rootProject.ext.dependencies["material-dialogs-lifecycle"]
+    api Depend.dialogs
+    api Depend.dialogsCore
     //coil
-    api rootProject.ext.dependencies.coil
+    api Depend.coil
     // utils 集合了大量常用的工具类
-    api rootProject.ext.dependencies.utilcodex
+    api Depend.utilCode
 }
 
 publish {
@@ -53,7 +59,7 @@ publish {
     userOrg = 'aleyn'
     groupId = 'me.aleyn'
     artifactId = 'MVVMLin'
-    publishVersion = rootProject.ext.android.versionName
+    publishVersion = BuildConfig.versionName
     desc = 'An Android MVVM framework'
     website = 'https://github.com/AleynP/MVVMLin'
 }

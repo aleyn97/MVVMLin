@@ -7,16 +7,12 @@ import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.annotation.RequiresApi
-import androidx.databinding.ViewDataBinding
 import com.aleyn.mvvm.base.BaseActivity
 import com.aleyn.mvvm.base.NoViewModel
-import com.pcl.mvvm.R
-import kotlinx.android.synthetic.main.activity_detail.*
+import com.pcl.mvvm.databinding.ActivityDetailBinding
 
-class DetailActivity : BaseActivity<NoViewModel, ViewDataBinding>() {
+class DetailActivity : BaseActivity<NoViewModel, ActivityDetailBinding>() {
 
-
-    override fun layoutId() = R.layout.activity_detail
 
     override fun initView(savedInstanceState: Bundle?) {
         initWebView()
@@ -24,14 +20,14 @@ class DetailActivity : BaseActivity<NoViewModel, ViewDataBinding>() {
 
     override fun initData() {
         intent.getStringExtra("url")?.let {
-            wv_detail.loadUrl(it)
+            mBinding.wvDetail.loadUrl(it)
         }
     }
 
     private fun initWebView() {
-        wv_detail.setInitialScale(100)
-        wv_detail.webViewClient = webViewClient
-        val ws = wv_detail.settings
+        mBinding.wvDetail.setInitialScale(100)
+        mBinding.wvDetail.webViewClient = webViewClient
+        val ws = mBinding.wvDetail.settings
         with(ws) {
             loadWithOverviewMode = false
             setSupportZoom(true)
@@ -42,7 +38,6 @@ class DetailActivity : BaseActivity<NoViewModel, ViewDataBinding>() {
             useWideViewPort = true
             blockNetworkImage = false
             domStorageEnabled = true
-            layoutAlgorithm = WebSettings.LayoutAlgorithm.NARROW_COLUMNS
             textZoom = 100
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -53,7 +48,7 @@ class DetailActivity : BaseActivity<NoViewModel, ViewDataBinding>() {
     private val webViewClient = object : WebViewClient() {
 
         override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
-            view?.loadUrl(url)
+            url?.let { view?.loadUrl(it) }
             return true
         }
 

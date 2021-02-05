@@ -1,5 +1,6 @@
 package com.aleyn.mvvm.utils
 
+import androidx.viewbinding.ViewBinding
 import com.aleyn.mvvm.base.IBaseResponse
 import com.aleyn.mvvm.network.ResponseThrowable
 import kotlinx.coroutines.Dispatchers
@@ -17,3 +18,5 @@ fun <T> Flow<IBaseResponse<T>>.applyTransform(): Flow<T> {
             else throw ResponseThrowable(it.code(), it.msg())
         }
 }
+
+//fun ViewBinding.

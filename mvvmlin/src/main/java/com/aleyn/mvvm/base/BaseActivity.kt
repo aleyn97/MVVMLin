@@ -1,10 +1,12 @@
 package com.aleyn.mvvm.base
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.ViewModelProvider
+import androidx.viewbinding.ViewBinding
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.customview.customView
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
@@ -13,16 +15,17 @@ import com.aleyn.mvvm.app.MVVMLin
 import com.aleyn.mvvm.event.Message
 import com.blankj.utilcode.util.ToastUtils
 import java.lang.reflect.ParameterizedType
+import java.lang.reflect.Type
 
 /**
  *   @auther : Aleyn
  *   time   : 2019/11/01
  */
-abstract class BaseActivity<VM : BaseViewModel, DB : ViewDataBinding> : AppCompatActivity() {
+abstract class BaseActivity<VM : BaseViewModel, DB : ViewBinding> : AppCompatActivity() {
 
     protected lateinit var viewModel: VM
 
-    protected var mBinding: DB? = null
+    protected lateinit var mBinding: DB
 
     private var dialog: MaterialDialog? = null
 
@@ -36,22 +39,38 @@ abstract class BaseActivity<VM : BaseViewModel, DB : ViewDataBinding> : AppCompa
         initData()
     }
 
-    abstract fun layoutId(): Int
+    open fun layoutId(): Int = 0
     abstract fun initView(savedInstanceState: Bundle?)
     abstract fun initData()
 
 
     /**
-     * DataBinding
+     * DataBinding or ViewBinding
      */
     private fun initViewDataBinding() {
-        val cls =
-            (javaClass.genericSuperclass as ParameterizedType).actualTypeArguments[1] as Class<*>
-        if (ViewDataBinding::class.java != cls && ViewDataBinding::class.java.isAssignableFrom(cls)) {
-            mBinding = DataBindingUtil.setContentView(this, layoutId())
-            mBinding?.lifecycleOwner = this
-        } else setContentView(layoutId())
-        createViewModel()
+        val type = javaClass.genericSuperclass
+        if (type is ParameterizedType) {
+            val cls = type.actualTypeArguments[1] as Class<*>
+            when {
+                ViewDataBinding::class.java.isAssignableFrom(cls) && cls != ViewDataBinding::class.java -> {
+                    if (layoutId() == 0) throw IllegalArgumentException("Using DataBinding requires overriding method layoutId")
+                    mBinding = DataBindingUtil.setContentView(this, layoutId())
+                    (mBinding as ViewDataBinding).lifecycleOwner = this
+                }
+                ViewBinding::class.java.isAssignableFrom(cls) && cls != ViewBinding::class.java -> {
+                    cls.getDeclaredMethod("inflate", LayoutInflater::class.java).let {
+                        @Suppress("UNCHECKED_CAST")
+                        mBinding = it.invoke(null, layoutInflater) as DB
+                        setContentView(mBinding.root)
+                    }
+                }
+                else -> {
+                    if (layoutId() == 0) throw IllegalArgumentException("If you don't use ViewBinding, you need to override method layoutId")
+                    setContentView(layoutId())
+                }
+            }
+            createViewModel(type.actualTypeArguments[0])
+        } else throw IllegalArgumentException("Generic error")
     }
 
 
@@ -84,7 +103,9 @@ abstract class BaseActivity<VM : BaseViewModel, DB : ViewDataBinding> : AppCompa
             .cornerRadius(8f)
             .customView(R.layout.custom_progress_dialog_view, noVerticalPadding = true)
             .lifecycleOwner(this)
-            .maxWidth(R.dimen.dialog_width))
+            .maxWidth(R.dimen.dialog_width).also {
+                dialog = it
+            })
             .show()
     }
 
@@ -100,14 +121,10 @@ abstract class BaseActivity<VM : BaseViewModel, DB : ViewDataBinding> : AppCompa
      * 创建 ViewModel
      */
     @Suppress("UNCHECKED_CAST")
-    private fun createViewModel() {
-        val type = javaClass.genericSuperclass
-        if (type is ParameterizedType) {
-            val tp = type.actualTypeArguments[0]
-            val tClass = tp as? Class<VM> ?: BaseViewModel::class.java
-            viewModel = ViewModelProvider(viewModelStore, defaultViewModelProviderFactory)
-                .get(tClass) as VM
-        }
+    private fun createViewModel(type: Type) {
+        val tClass = type as? Class<VM> ?: BaseViewModel::class.java
+        viewModel = ViewModelProvider(viewModelStore, defaultViewModelProviderFactory)
+            .get(tClass) as VM
     }
 
     override fun getDefaultViewModelProviderFactory(): ViewModelProvider.Factory {

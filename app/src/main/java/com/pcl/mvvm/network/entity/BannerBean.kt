@@ -2,7 +2,6 @@ package com.pcl.mvvm.network.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.stx.xhb.androidx.entity.SimpleBannerInfo
 
 /**
  * @auther : Aleyn
@@ -35,8 +34,4 @@ data class BannerBean(
     val title: String,
     val type: Int,
     val url: String
-) : SimpleBannerInfo() {
-    override fun getXBannerUrl(): Any {
-        return imagePath
-    }
-}
+)
