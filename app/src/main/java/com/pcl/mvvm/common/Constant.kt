@@ -1,7 +1,7 @@
 package com.pcl.mvvm.common
 
 /**
- *   @auther : Aleyn
+ *   @author : Aleyn
  *   time   : 2019/08/16
  */
 object Constant {

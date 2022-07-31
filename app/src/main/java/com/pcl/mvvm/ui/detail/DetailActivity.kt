@@ -1,12 +1,10 @@
 package com.pcl.mvvm.ui.detail
 
-import android.os.Build
 import android.os.Bundle
 import android.webkit.WebResourceRequest
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import androidx.annotation.RequiresApi
 import com.aleyn.mvvm.base.BaseActivity
 import com.aleyn.mvvm.base.NoViewModel
 import com.pcl.mvvm.databinding.ActivityDetailBinding
@@ -40,19 +38,17 @@ class DetailActivity : BaseActivity<NoViewModel, ActivityDetailBinding>() {
             domStorageEnabled = true
             textZoom = 100
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            ws.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
-        }
+        ws.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
     }
 
     private val webViewClient = object : WebViewClient() {
 
+        @Deprecated("Deprecated in Java")
         override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
             url?.let { view?.loadUrl(it) }
             return true
         }
 
-        @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
         override fun shouldOverrideUrlLoading(
             view: WebView?,
             request: WebResourceRequest?

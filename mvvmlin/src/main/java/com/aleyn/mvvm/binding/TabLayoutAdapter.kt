@@ -4,7 +4,7 @@ import androidx.databinding.BindingAdapter
 import com.google.android.material.tabs.TabLayout
 
 /**
- *   @auther : Aleyn
+ *   @author : Aleyn
  *   time   : 2019/11/13
  */
 object TabLayoutAdapter {

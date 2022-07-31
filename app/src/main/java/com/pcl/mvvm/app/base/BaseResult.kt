@@ -3,7 +3,7 @@ package com.pcl.mvvm.app.base
 import com.aleyn.mvvm.base.IBaseResponse
 
 /**
- *   @auther : Aleyn
+ *   @author : Aleyn
  *   time   : 2019/11/01
  */
 data class BaseResult<T>(

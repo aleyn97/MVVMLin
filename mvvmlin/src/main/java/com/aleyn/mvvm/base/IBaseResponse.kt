@@ -1,7 +1,7 @@
 package com.aleyn.mvvm.base
 
 /**
- *   @auther : Aleyn
+ *   @author : Aleyn
  *   time   : 2020/01/13
  */
 interface IBaseResponse<T> {

@@ -17,8 +17,12 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme"
             tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".ui.detail.DetailActivity" />
-        <activity android:name=".ui.MainActivity">
+        <activity
+                android:name=".ui.detail.DetailActivity"
+                android:exported="false" />
+        <activity
+                android:name=".ui.MainActivity"
+                android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

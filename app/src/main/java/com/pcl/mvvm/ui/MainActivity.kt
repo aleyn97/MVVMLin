@@ -12,11 +12,12 @@ import com.pcl.mvvm.databinding.ActivityMainBinding
 import com.pcl.mvvm.ui.home.HomeFragment
 import com.pcl.mvvm.ui.me.MeFragment
 import com.pcl.mvvm.ui.project.ProjectFragment
-import me.majiajie.pagerbottomtabstrip.listener.OnTabItemSelectedListener
 
 class MainActivity : BaseActivity<NoViewModel, ActivityMainBinding>() {
 
     private val fragments = ArrayList<Fragment>()
+
+    private lateinit var showFragment: Fragment
 
 
     override fun initView(savedInstanceState: Bundle?) {
@@ -24,26 +25,16 @@ class MainActivity : BaseActivity<NoViewModel, ActivityMainBinding>() {
         fragments.add(HomeFragment.newInstance())
         fragments.add(ProjectFragment.newInstance())
         fragments.add(MeFragment.newInstance())
+        showFragment = fragments[0]
         supportFragmentManager
             .beginTransaction()
-            .replace(R.id.container, fragments[0])
+            .replace(R.id.container, showFragment)
             .commitNow()
 
-        val navCtl = mBinding.pageNavigationView.material()
-            .addItem(R.drawable.tab_shop_selected, "首页")
-            .addItem(R.drawable.tab_car_selected, "项目")
-            .addItem(R.drawable.tab_me_selected, "我的")
-            .build()
-
-        navCtl.addTabItemSelectedListener(object : OnTabItemSelectedListener {
-
-            override fun onSelected(index: Int, old: Int) {
-                switchPage(index, old)
-            }
-
-            override fun onRepeat(index: Int) {
-            }
-        })
+        mBinding.bottomNavigationView.setOnItemSelectedListener {
+            switchPage(it.itemId)
+            return@setOnItemSelectedListener true
+        }
         PermissionUtils.permission(*PermissionUtils.getPermissions().toTypedArray())
             .callback(object : PermissionUtils.FullCallback {
                 override fun onGranted(granted: MutableList<String>) {
@@ -60,14 +51,21 @@ class MainActivity : BaseActivity<NoViewModel, ActivityMainBinding>() {
             .request()
     }
 
-    private fun switchPage(index: Int, old: Int) {
+    private fun switchPage(itemId: Int) {
+        val index = when (itemId) {
+            R.id.action_home -> 0
+            R.id.action_project -> 1
+            R.id.action_me -> 2
+            else -> return
+        }
         val now = fragments[index]
         supportFragmentManager.beginTransaction().apply {
             if (!now.isAdded) {
                 add(R.id.container, now)
             }
+            hide(showFragment)
             show(now)
-            hide(fragments[old])
+            showFragment = now
             commit()
         }
     }

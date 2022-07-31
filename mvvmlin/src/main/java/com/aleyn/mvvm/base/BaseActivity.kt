@@ -18,7 +18,7 @@ import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
 /**
- *   @auther : Aleyn
+ *   @author : Aleyn
  *   time   : 2019/11/01
  */
 abstract class BaseActivity<VM : BaseViewModel, DB : ViewBinding> : AppCompatActivity() {
@@ -36,11 +36,13 @@ abstract class BaseActivity<VM : BaseViewModel, DB : ViewBinding> : AppCompatAct
         //注册 UI事件
         registorDefUIChange()
         initView(savedInstanceState)
+        initObserve()
         initData()
     }
 
     open fun layoutId(): Int = 0
     abstract fun initView(savedInstanceState: Bundle?)
+    open fun initObserve() {}
     abstract fun initData()
 
 
@@ -78,18 +80,15 @@ abstract class BaseActivity<VM : BaseViewModel, DB : ViewBinding> : AppCompatAct
      * 注册 UI 事件
      */
     private fun registorDefUIChange() {
-        viewModel.defUI.showDialog.observe(this, {
+        viewModel.defUI.showDialog.observe(this) {
             showLoading()
-        })
-        viewModel.defUI.dismissDialog.observe(this, {
+        }
+        viewModel.defUI.dismissDialog.observe(this) {
             dismissLoading()
-        })
-        viewModel.defUI.toastEvent.observe(this, {
-            ToastUtils.showShort(it)
-        })
-        viewModel.defUI.msgEvent.observe(this, {
+        }
+        viewModel.defUI.msgEvent.observe(this) {
             handleEvent(it)
-        })
+        }
     }
 
     open fun handleEvent(msg: Message) {}
@@ -123,12 +122,7 @@ abstract class BaseActivity<VM : BaseViewModel, DB : ViewBinding> : AppCompatAct
     @Suppress("UNCHECKED_CAST")
     private fun createViewModel(type: Type) {
         val tClass = type as? Class<VM> ?: BaseViewModel::class.java
-        viewModel = ViewModelProvider(viewModelStore, defaultViewModelProviderFactory)
-            .get(tClass) as VM
-    }
-
-    override fun getDefaultViewModelProviderFactory(): ViewModelProvider.Factory {
-        return MVVMLin.getConfig().viewModelFactory() ?: super.getDefaultViewModelProviderFactory()
+        viewModel = ViewModelProvider(viewModelStore, defaultViewModelProviderFactory)[tClass] as VM
     }
 
 }

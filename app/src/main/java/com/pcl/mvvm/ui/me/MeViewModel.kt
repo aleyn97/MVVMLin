@@ -1,9 +1,13 @@
 package com.pcl.mvvm.ui.me
 
-import androidx.lifecycle.MutableLiveData
 import com.aleyn.mvvm.base.BaseViewModel
+import com.aleyn.mvvm.extend.asResponse
+import com.aleyn.mvvm.extend.getOrThrow
 import com.pcl.mvvm.network.entity.UsedWeb
 import com.pcl.mvvm.utils.InjectorUtil
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.map
 
 /**
  *   @auther : Aleyn
@@ -13,14 +17,15 @@ class MeViewModel : BaseViewModel() {
 
     private val homeRepository by lazy { InjectorUtil.getHomeRepository() }
 
-    var popularWeb = MutableLiveData<MutableList<UsedWeb>>()
+    private val _popularWeb = MutableSharedFlow<MutableList<UsedWeb>>()
+    val popularWeb: SharedFlow<MutableList<UsedWeb>> = _popularWeb
+
 
     fun getPopularWeb() {
-        launchGo({
-            val result = homeRepository.getPopularWeb()
-            if (result.isSuccess()) {
-                popularWeb.value = result.data
+        launch {
+            homeRepository.getPopularWeb().getOrThrow().let {
+                _popularWeb.emit(it)
             }
-        })
+        }
     }
 }

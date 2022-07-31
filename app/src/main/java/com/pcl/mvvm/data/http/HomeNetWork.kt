@@ -4,16 +4,16 @@ import com.pcl.mvvm.network.api.HomeService
 import com.pcl.mvvm.utils.RetrofitClient
 
 /**
- *   @auther : Aleyn
+ *   @author : Aleyn
  *   time   : 2019/11/01
  */
 class HomeNetWork {
 
     private val mService by lazy { RetrofitClient.getInstance().create(HomeService::class.java) }
 
-    suspend fun getBannerData() = mService.getBanner()
+    fun getBannerData(cacheModel: String) = mService.getBanner(cacheModel)
 
-    suspend fun getHomeList(page: Int) = mService.getHomeList(page)
+    fun getHomeList(page: Int, cacheModel: String) = mService.getHomeList(page, cacheModel)
 
     suspend fun getNaviJson() = mService.naviJson()
 

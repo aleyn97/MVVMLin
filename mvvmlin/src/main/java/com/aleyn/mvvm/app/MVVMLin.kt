@@ -1,19 +1,29 @@
 package com.aleyn.mvvm.app
 
+import com.aleyn.mvvm.network.ExceptionHandle
+import com.blankj.utilcode.util.ToastUtils
+import kotlinx.coroutines.CoroutineExceptionHandler
+
 /**
- *   @auther : Aleyn
+ *   @author : Aleyn
  *   time   : 2019/11/12
  */
 object MVVMLin {
 
-    private val DEFULT = object : GlobalConfig {}
-
-    private var mConfig: GlobalConfig = DEFULT
-
-    fun install(config: GlobalConfig) {
-        mConfig = config
+    private val defNetException = CoroutineExceptionHandler { _, throwable ->
+        val exception = ExceptionHandle.handleException(throwable)
+        ToastUtils.showShort(exception.errMsg)
     }
 
-    fun getConfig() = mConfig
+    val netException: CoroutineExceptionHandler
+        get() = customNetException ?: defNetException
+
+
+    private var customNetException: CoroutineExceptionHandler? = null
+
+
+    fun setNetException(netException: CoroutineExceptionHandler) = apply {
+        customNetException = netException
+    }
 
 }

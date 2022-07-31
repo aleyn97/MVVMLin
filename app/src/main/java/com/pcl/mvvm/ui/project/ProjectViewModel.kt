@@ -1,25 +1,19 @@
 package com.pcl.mvvm.ui.project
 
 import androidx.databinding.ObservableArrayList
-import com.aleyn.mvvm.app.MVVMLin
 import com.aleyn.mvvm.base.BaseViewModel
 import com.aleyn.mvvm.event.Message
-import com.aleyn.mvvm.network.ResponseThrowable
-import com.blankj.utilcode.util.LogUtils
+import com.aleyn.mvvm.extend.getOrThrow
 import com.google.android.material.tabs.TabLayout
 import com.pcl.mvvm.BR
 import com.pcl.mvvm.R
 import com.pcl.mvvm.network.entity.ArticlesBean
 import com.pcl.mvvm.network.entity.NavTypeBean
 import com.pcl.mvvm.utils.InjectorUtil
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.*
 import me.tatarka.bindingcollectionadapter2.ItemBinding
 
 /**
- *   @auther : Aleyn
+ *   @author : Aleyn
  *   time   : 2019/11/12
  */
 class ProjectViewModel : BaseViewModel() {
@@ -38,44 +32,29 @@ class ProjectViewModel : BaseViewModel() {
 
     private var page: Int = 0
 
-
     /**
-     * 当一个请求结果，依赖另一个请求结果的时候，我们可以用 流的方式如下：
-     *  以此类推，还可以 用  zip 操作符 对多个请求进行合并，以及 flatMapMerge、flatMapConcat 等。
-     *  熟悉 RxJava 的你，分分钟钟可以上手的  （斜眼笑  `-` ）
+     * 顺序请求
      */
-    @ExperimentalCoroutinesApi
-    @FlowPreview
     fun getFirstData() {
-        launchUI {
-            launchFlow { homeRepository.getNaviJson() }
-                .flatMapConcat {
-                    return@flatMapConcat if (it.isSuccess()) {
-                        navData.addAll(it.data)
-                        it.data.forEach { item -> navTitle.add(item.name) }
-                        launchFlow { homeRepository.getProjectList(page, it.data[0].id) }
-                    } else throw ResponseThrowable(it.errorCode, it.errorMsg)
-                }
-                .onStart { defUI.showDialog.postValue(null) }
-                .flowOn(Dispatchers.IO)
-                .onCompletion { defUI.dismissDialog.call() }
-                .catch {
-                    // 错误处理
-                    val err = MVVMLin.getConfig().globalExceptionHandle(it)
-                    LogUtils.d("${err.code}: ${err.errMsg}")
-                }
-                .collect {
-                    if (it.isSuccess()) items.addAll(it.data.datas)
-                }
-        }
+        launch {
+            //tab 数据
+            val navResult = homeRepository.getNaviJson().getOrThrow()
+            navData.addAll(navResult)
+            navResult.forEach { item -> navTitle.add(item.name) }
 
+            //tab对应列表数据
+            val listBean = homeRepository.getProjectList(page, navResult.first().id).getOrThrow()
+            items.addAll(listBean.datas)
+        }
     }
 
     fun getProjectList(cid: Int) {
-        launchOnlyresult({ homeRepository.getProjectList(page, cid) }, {
-            items.clear()
-            items.addAll(it.datas)
-        })
+        launch {
+            homeRepository.getProjectList(page, cid).getOrThrow().let {
+                items.clear()
+                items.addAll(it.datas)
+            }
+        }
     }
 
 

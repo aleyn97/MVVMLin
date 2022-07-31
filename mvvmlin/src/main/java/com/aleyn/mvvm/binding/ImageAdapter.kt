@@ -5,7 +5,7 @@ import androidx.databinding.BindingAdapter
 import coil.load
 
 /**
- *   @auther : Aleyn
+ *   @author : Aleyn
  *   time   : 2019/11/07
  */
 object ImageAdapter {

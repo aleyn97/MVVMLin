@@ -1,69 +1,47 @@
 package com.pcl.mvvm.data
 
+import com.aleyn.cache.CacheMode
 import com.aleyn.mvvm.base.BaseModel
 import com.pcl.mvvm.app.base.BaseResult
-import com.pcl.mvvm.data.db.dao.HomeDao
 import com.pcl.mvvm.data.http.HomeNetWork
 import com.pcl.mvvm.network.entity.BannerBean
 import com.pcl.mvvm.network.entity.HomeListBean
-import com.pcl.mvvm.network.entity.NavTypeBean
-import com.pcl.mvvm.network.entity.UsedWeb
+import kotlinx.coroutines.flow.Flow
 
 /**
- *   @auther : Aleyn
+ *   @author : Aleyn
  *   time   : 2019/10/29
  */
 class HomeRepository private constructor(
-    private val netWork: HomeNetWork,
-    private val localData: HomeDao
+    private val netWork: HomeNetWork
 ) : BaseModel() {
 
-    suspend fun getBannerData(refresh: Boolean = false): List<BannerBean> {
-        return cacheNetCall({
-            netWork.getBannerData()
-        }, {
-            localData.getBannerList()
-        }, {
-            if (refresh) localData.deleteBannerAll()
-            localData.insertBanner(it)
-        }, {
-            !refresh && !it.isNullOrEmpty()
-        })
+    fun getBannerData(refresh: Boolean): Flow<BaseResult<List<BannerBean>>> {
+        val cacheModel =
+            if (refresh) CacheMode.NETWORK_PUT_CACHE else CacheMode.READ_CACHE_NETWORK_PUT
+        return netWork.getBannerData(cacheModel)
     }
 
-    suspend fun getHomeList(page: Int, refresh: Boolean): HomeListBean {
-        return cacheNetCall({
-            netWork.getHomeList(page)
-        }, {
-            localData.getHomeList(page + 1)
-        }, {
-            if (refresh) localData.deleteHomeAll()
-            localData.insertData(it)
-        }, {
-            !refresh
-        })
+    fun getHomeList(page: Int, refresh: Boolean = false): Flow<BaseResult<HomeListBean>> {
+        val cacheModel =
+            if (refresh) CacheMode.NETWORK_PUT_CACHE else CacheMode.READ_CACHE_NETWORK_PUT
+        return netWork.getHomeList(page, cacheModel)
     }
 
-    suspend fun getNaviJson(): BaseResult<List<NavTypeBean>> {
-        return netWork.getNaviJson()
-    }
+    suspend fun getNaviJson() = netWork.getNaviJson()
 
-    suspend fun getProjectList(page: Int, cid: Int): BaseResult<HomeListBean> {
-        return netWork.getProjectList(page, cid)
-    }
+    suspend fun getProjectList(page: Int, cid: Int) = netWork.getProjectList(page, cid)
 
-    suspend fun getPopularWeb(): BaseResult<MutableList<UsedWeb>> {
-        return netWork.getPopularWeb()
-    }
+    suspend fun getPopularWeb() = netWork.getPopularWeb()
 
     companion object {
 
         @Volatile
         private var INSTANCE: HomeRepository? = null
 
-        fun getInstance(netWork: HomeNetWork, homeDao: HomeDao) =
+        fun getInstance(netWork: HomeNetWork) =
             INSTANCE ?: synchronized(this) {
-                INSTANCE ?: HomeRepository(netWork, homeDao).also { INSTANCE = it }
+                INSTANCE ?: HomeRepository(netWork).also { INSTANCE = it }
             }
     }
 }

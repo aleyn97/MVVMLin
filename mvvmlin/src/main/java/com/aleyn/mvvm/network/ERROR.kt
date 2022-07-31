@@ -1,23 +1,26 @@
 package com.aleyn.mvvm.network
 
 /**
- *   @auther : Aleyn
+ *   @author : Aleyn
  *   time   : 2019/08/12
  */
-enum class ERROR(private val code: Int, private val err: String) {
+enum class ERROR(val code: Int, val err: String) {
 
     /**
      * 未知错误
      */
     UNKNOWN(1000, "未知错误"),
+
     /**
      * 解析错误
      */
     PARSE_ERROR(1001, "解析错误"),
+
     /**
      * 网络错误
      */
-    NETWORD_ERROR(1002, "网络错误"),
+    NETWORK_ERROR(1002, "网络错误"),
+
     /**
      * 协议出错
      */
@@ -31,14 +34,11 @@ enum class ERROR(private val code: Int, private val err: String) {
     /**
      * 连接超时
      */
-    TIMEOUT_ERROR(1006, "连接超时");
+    TIMEOUT_ERROR(1006, "连接超时"),
 
-    fun getValue(): String {
-        return err
-    }
-
-    fun getKey(): Int {
-        return code
-    }
+    /**
+     * data为空
+     */
+    DATA_NULL(1007, "返回数据为空");
 
 }

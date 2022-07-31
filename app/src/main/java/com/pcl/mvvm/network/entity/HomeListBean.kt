@@ -1,10 +1,5 @@
 package com.pcl.mvvm.network.entity
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-import androidx.room.TypeConverters
-import com.pcl.mvvm.data.db.converters.ArticlesTypeConverters
-
 /**
  * @author :Aleyn
  * time: 2019/11/01
@@ -19,10 +14,7 @@ import com.pcl.mvvm.data.db.converters.ArticlesTypeConverters
  * size : 20
  * total : 1049
  */
-@Entity(tableName = "home_data")
-@TypeConverters(ArticlesTypeConverters::class)
 data class HomeListBean(
-    @PrimaryKey
     val curPage: Int,
     val offset: Int,
     val over: Boolean,

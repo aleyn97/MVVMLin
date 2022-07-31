@@ -1,7 +1,7 @@
 package com.aleyn.mvvm.base
 
 /**
- *   @auther : Aleyn
+ *   @author : Aleyn
  *   time   : 2019/11/01
  */
 class NoViewModel : BaseViewModel()

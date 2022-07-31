@@ -2,6 +2,7 @@ package com.pcl.mvvm.ui.me
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.aleyn.mvvm.base.BaseFragment
 import com.pcl.mvvm.R
@@ -23,15 +24,18 @@ class MeFragment : BaseFragment<MeViewModel, MeFragmentBinding>() {
             layoutManager = LinearLayoutManager(context)
             adapter = mAdapter
         }
-        viewModel.popularWeb.observe(viewLifecycleOwner, {
-            mAdapter.setNewInstance(it)
-        })
         mAdapter.setOnItemClickListener { _, _, position ->
             val intent = Intent().apply {
-                setClass(activity!!, DetailActivity::class.java)
+                setClass(requireContext(), DetailActivity::class.java)
                 putExtra("url", (mAdapter.data[position]).link)
             }
             startActivity(intent)
+        }
+
+        lifecycleScope.launchWhenCreated {
+            viewModel.popularWeb.collect {
+                mAdapter.setList(it)
+            }
         }
     }
 

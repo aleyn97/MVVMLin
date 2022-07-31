@@ -4,8 +4,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.aleyn.mvvm.base.BaseFragment
+import com.blankj.utilcode.util.LogUtils
 import com.pcl.mvvm.R
 import com.pcl.mvvm.databinding.HomeFragmentBinding
 import com.pcl.mvvm.network.entity.ArticlesBean
@@ -16,7 +18,7 @@ import com.youth.banner.Banner
 
 /**
  * 此页面使用 ViewBinding
- *   @auther : Aleyn
+ *   @author : Aleyn
  *   time   : 2019/11/02
  */
 class HomeFragment : BaseFragment<HomeViewModel, HomeFragmentBinding>() {
@@ -38,7 +40,7 @@ class HomeFragment : BaseFragment<HomeViewModel, HomeFragmentBinding>() {
             banner.minimumWidth = MATCH_PARENT
             banner.layoutParams =
                 ViewGroup.LayoutParams(MATCH_PARENT, resources.getDimension(R.dimen.dp_120).toInt())
-            banner.adapter = GlideImageLoader()
+            banner.setAdapter(GlideImageLoader())
         }
         mAdapter.apply {
             addHeaderView(banner)
@@ -50,29 +52,33 @@ class HomeFragment : BaseFragment<HomeViewModel, HomeFragmentBinding>() {
                 startActivity(intent)
             }
         }
-        mBinding.srlHome.setOnRefreshListener {
+        mBinding.refreshHome.setOnRefreshListener {
             dropDownRefresh()
         }
     }
 
-    override fun lazyLoadData() {
-        viewModel.run {
-
-            getBanner().observe(this@HomeFragment, {
-                banner.setDatas(it)
-            })
-
-            getHomeList(page).observe(this@HomeFragment, {
-                if (mBinding.srlHome.isRefreshing) mBinding.srlHome.isRefreshing = false
-                it?.let {
-                    if (it.curPage == 1) mAdapter.setNewInstance(it.datas)
-                    else mAdapter.addData(it.datas)
-                    if (it.curPage == it.pageCount) mAdapter.loadMoreModule.loadMoreEnd()
-                    else mAdapter.loadMoreModule.loadMoreComplete()
-                    page = it.curPage
-                }
-            })
+    override fun initObserve() {
+        viewModel.refreshState.observe(this@HomeFragment) {
+            if (mBinding.refreshHome.isRefreshing) mBinding.refreshHome.finishRefresh()
         }
+
+        lifecycleScope.launchWhenCreated {
+            viewModel.mBanners.collect { banner.setDatas(it) }
+        }
+        lifecycleScope.launchWhenCreated {
+            viewModel.projectData.collect {
+                if (it.curPage == 1) mAdapter.setList(it.datas)
+                else mAdapter.addData(it.datas)
+                if (it.curPage == it.pageCount) mAdapter.loadMoreModule.loadMoreEnd()
+                else mAdapter.loadMoreModule.loadMoreComplete()
+                page = it.curPage
+            }
+        }
+    }
+
+    override fun lazyLoadData() {
+        viewModel.getBanner()
+        viewModel.getHomeList(page)
     }
 
     /**
@@ -80,7 +86,6 @@ class HomeFragment : BaseFragment<HomeViewModel, HomeFragmentBinding>() {
      */
     private fun dropDownRefresh() {
         page = 0
-        mBinding.srlHome.isRefreshing = true
         viewModel.getHomeList(page, true)
         viewModel.getBanner(true)
     }

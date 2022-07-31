@@ -3,7 +3,7 @@ package com.aleyn.mvvm.network
 import com.aleyn.mvvm.base.IBaseResponse
 
 /**
- *   @auther : Aleyn
+ *   @author : Aleyn
  *   time   : 2019/08/12
  */
 open class ResponseThrowable : Exception {
@@ -11,8 +11,8 @@ open class ResponseThrowable : Exception {
     var errMsg: String
 
     constructor(error: ERROR, e: Throwable? = null) : super(e) {
-        code = error.getKey()
-        errMsg = error.getValue()
+        code = error.code
+        errMsg = error.err
     }
 
     constructor(code: Int, msg: String, e: Throwable? = null) : super(e) {

@@ -1,10 +1,7 @@
 package com.pcl.mvvm.network.entity
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-
 /**
- * @auther : Aleyn
+ * @author : Aleyn
  * time   : 2019/11/01
  */
 
@@ -23,9 +20,7 @@ import androidx.room.PrimaryKey
  * type : 0
  * url : http://www.wanandroid.com/blog/show/2037
  */
-@Entity(tableName = "banner")
 data class BannerBean(
-    @PrimaryKey
     val id: Int,
     val desc: String,
     val imagePath: String,

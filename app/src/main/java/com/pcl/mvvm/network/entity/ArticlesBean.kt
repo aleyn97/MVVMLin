@@ -1,7 +1,7 @@
 package com.pcl.mvvm.network.entity
 
 /**
- *   @auther : Aleyn
+ *   @author : Aleyn
  *   time   : 2019/11/01
  */
 
@@ -48,23 +48,3 @@ data class ArticlesBean(
     // 分类name
     var navigationName: String? = null
 )
-
-/*data class Data(
-    val apkLink: String,
-    val author: String,
-    val chapterId: Int,
-    val chapterName: String,
-    val collect: Boolean,
-    val courseId: Int,
-    val desc: String,
-    val envelopePic: String,
-    val id: Int,
-    val link: String,
-    val niceDate: String,
-    val origin: String,
-    val projectLink: String,
-    val publishTime: Long,
-    val title: String,
-    val visible: Int,
-    val zan: Int
-)*/

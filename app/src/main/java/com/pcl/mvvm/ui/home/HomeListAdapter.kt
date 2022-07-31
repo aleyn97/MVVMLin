@@ -9,7 +9,7 @@ import com.pcl.mvvm.R
 import com.pcl.mvvm.network.entity.ArticlesBean
 
 /**
- *   @auther : Aleyn
+ *   @author : Aleyn
  *   time   : 2019/11/08
  */
 class HomeListAdapter : BaseQuickAdapter<ArticlesBean, BaseViewHolder>(R.layout.item_article_list),
