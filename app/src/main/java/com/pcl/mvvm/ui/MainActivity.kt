@@ -2,7 +2,7 @@ package com.pcl.mvvm.ui
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import com.aleyn.mvvm.base.BaseActivity
+import com.aleyn.mvvm.base.BaseVMActivity
 import com.aleyn.mvvm.base.NoViewModel
 import com.blankj.utilcode.util.BarUtils
 import com.blankj.utilcode.util.ColorUtils
@@ -13,7 +13,7 @@ import com.pcl.mvvm.ui.home.HomeFragment
 import com.pcl.mvvm.ui.me.MeFragment
 import com.pcl.mvvm.ui.project.ProjectFragment
 
-class MainActivity : BaseActivity<NoViewModel, ActivityMainBinding>() {
+class MainActivity : BaseVMActivity<NoViewModel, ActivityMainBinding>() {
 
     private val fragments = ArrayList<Fragment>()
 

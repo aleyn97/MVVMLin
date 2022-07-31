@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import com.aleyn.mvvm.base.BaseViewModel
 import com.aleyn.mvvm.event.SingleLiveEvent
 import com.aleyn.mvvm.extend.asResponse
+import com.aleyn.mvvm.extend.bindLoading
 import com.aleyn.mvvm.extend.getOrThrow
 import com.pcl.mvvm.network.entity.BannerBean
 import com.pcl.mvvm.network.entity.HomeListBean
@@ -46,6 +47,7 @@ class HomeViewModel : BaseViewModel() {
             homeRepository.getHomeList(page, refresh)
                 .asResponse()
                 .onCompletion { if (refresh) _refreshState.call() }
+                .bindLoading(this@HomeViewModel)
                 .collect(_projectData)
         }
     }

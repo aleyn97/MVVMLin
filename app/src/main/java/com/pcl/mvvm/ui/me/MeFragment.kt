@@ -4,12 +4,12 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.aleyn.mvvm.base.BaseFragment
+import com.aleyn.mvvm.base.BaseVMFragment
 import com.pcl.mvvm.R
 import com.pcl.mvvm.databinding.MeFragmentBinding
 import com.pcl.mvvm.ui.detail.DetailActivity
 
-class MeFragment : BaseFragment<MeViewModel, MeFragmentBinding>() {
+class MeFragment : BaseVMFragment<MeViewModel, MeFragmentBinding>() {
 
     private val mAdapter by lazy { MeWebAdapter() }
 
@@ -17,7 +17,7 @@ class MeFragment : BaseFragment<MeViewModel, MeFragmentBinding>() {
         fun newInstance() = MeFragment()
     }
 
-    override fun layoutId() = R.layout.me_fragment
+    override val layoutId get() = R.layout.me_fragment
 
     override fun initView(savedInstanceState: Bundle?) {
         with(mBinding.rvMeUesdWeb) {

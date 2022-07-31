@@ -7,6 +7,7 @@ plugins {
     id("com.android.library")
     kotlin("android")
     kotlin("kapt")
+    `maven-publish`
 }
 
 android {
@@ -41,6 +42,20 @@ android {
         jvmTarget = "1.8"
     }
 }
+
+afterEvaluate {
+    publishing {
+        publications {
+            create<MavenPublication>("release") {
+                from(components.getByName("release"))
+                groupId = "com.aleyn"
+                artifactId = "MVVMLin"
+                version = "2.0.0"
+            }
+        }
+    }
+}
+
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))

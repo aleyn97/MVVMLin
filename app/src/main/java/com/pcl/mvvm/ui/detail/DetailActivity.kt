@@ -9,7 +9,7 @@ import com.aleyn.mvvm.base.BaseActivity
 import com.aleyn.mvvm.base.NoViewModel
 import com.pcl.mvvm.databinding.ActivityDetailBinding
 
-class DetailActivity : BaseActivity<NoViewModel, ActivityDetailBinding>() {
+class DetailActivity : BaseActivity<ActivityDetailBinding>() {
 
 
     override fun initView(savedInstanceState: Bundle?) {

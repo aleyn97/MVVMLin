@@ -5,42 +5,34 @@ import android.view.LayoutInflater
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
-import androidx.lifecycle.ViewModelProvider
 import androidx.viewbinding.ViewBinding
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.customview.customView
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.aleyn.mvvm.R
-import com.aleyn.mvvm.app.MVVMLin
 import com.aleyn.mvvm.event.Message
-import com.blankj.utilcode.util.ToastUtils
 import java.lang.reflect.ParameterizedType
-import java.lang.reflect.Type
 
 /**
  *   @author : Aleyn
  *   time   : 2019/11/01
  */
-abstract class BaseActivity<VM : BaseViewModel, DB : ViewBinding> : AppCompatActivity() {
-
-    protected lateinit var viewModel: VM
+abstract class BaseActivity<DB : ViewBinding> : AppCompatActivity() {
 
     protected lateinit var mBinding: DB
 
     private var dialog: MaterialDialog? = null
 
+    open val layoutId: Int = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initViewDataBinding()
-        lifecycle.addObserver(viewModel)
-        //注册 UI事件
-        registorDefUIChange()
         initView(savedInstanceState)
         initObserve()
         initData()
     }
 
-    open fun layoutId(): Int = 0
     abstract fun initView(savedInstanceState: Bundle?)
     open fun initObserve() {}
     abstract fun initData()
@@ -52,11 +44,13 @@ abstract class BaseActivity<VM : BaseViewModel, DB : ViewBinding> : AppCompatAct
     private fun initViewDataBinding() {
         val type = javaClass.genericSuperclass
         if (type is ParameterizedType) {
-            val cls = type.actualTypeArguments[1] as Class<*>
+            val cls = type.actualTypeArguments
+                .map { it as Class<*> }
+                .first { ViewBinding::class.java.isAssignableFrom(it) }
             when {
                 ViewDataBinding::class.java.isAssignableFrom(cls) && cls != ViewDataBinding::class.java -> {
-                    if (layoutId() == 0) throw IllegalArgumentException("Using DataBinding requires overriding method layoutId")
-                    mBinding = DataBindingUtil.setContentView(this, layoutId())
+                    if (layoutId == 0) throw IllegalArgumentException("Using DataBinding requires overriding method layoutId")
+                    mBinding = DataBindingUtil.setContentView(this, layoutId)
                     (mBinding as ViewDataBinding).lifecycleOwner = this
                 }
                 ViewBinding::class.java.isAssignableFrom(cls) && cls != ViewBinding::class.java -> {
@@ -67,28 +61,11 @@ abstract class BaseActivity<VM : BaseViewModel, DB : ViewBinding> : AppCompatAct
                     }
                 }
                 else -> {
-                    if (layoutId() == 0) throw IllegalArgumentException("If you don't use ViewBinding, you need to override method layoutId")
-                    setContentView(layoutId())
+                    if (layoutId == 0) throw IllegalArgumentException("If you don't use ViewBinding, you need to override method layoutId")
+                    setContentView(layoutId)
                 }
             }
-            createViewModel(type.actualTypeArguments[0])
         } else throw IllegalArgumentException("Generic error")
-    }
-
-
-    /**
-     * 注册 UI 事件
-     */
-    private fun registorDefUIChange() {
-        viewModel.defUI.showDialog.observe(this) {
-            showLoading()
-        }
-        viewModel.defUI.dismissDialog.observe(this) {
-            dismissLoading()
-        }
-        viewModel.defUI.msgEvent.observe(this) {
-            handleEvent(it)
-        }
     }
 
     open fun handleEvent(msg: Message) {}
@@ -96,7 +73,7 @@ abstract class BaseActivity<VM : BaseViewModel, DB : ViewBinding> : AppCompatAct
     /**
      * 打开等待框
      */
-    private fun showLoading() {
+    protected fun showLoading() {
         (dialog ?: MaterialDialog(this)
             .cancelable(false)
             .cornerRadius(8f)
@@ -111,18 +88,8 @@ abstract class BaseActivity<VM : BaseViewModel, DB : ViewBinding> : AppCompatAct
     /**
      * 关闭等待框
      */
-    private fun dismissLoading() {
+    protected fun dismissLoading() {
         dialog?.run { if (isShowing) dismiss() }
-    }
-
-
-    /**
-     * 创建 ViewModel
-     */
-    @Suppress("UNCHECKED_CAST")
-    private fun createViewModel(type: Type) {
-        val tClass = type as? Class<VM> ?: BaseViewModel::class.java
-        viewModel = ViewModelProvider(viewModelStore, defaultViewModelProviderFactory)[tClass] as VM
     }
 
 }

@@ -47,8 +47,8 @@ android {
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
-    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     AndroidX.values.forEach { implementation(it) }
+    implementation(AndroidX.recyclerview)
     testImplementation(Depend.junit)
     androidTestImplementation(Depend.androidTestJunit)
     androidTestImplementation(Depend.espressoCore)
@@ -61,7 +61,6 @@ dependencies {
     implementation(Depend.refreshHeader)
     implementation(Depend.bdclta)
     implementation(Depend.bdcltaRv)
-    implementation(Depend.netCache)
     implementation(Depend.netCache)
     Retrofit.values.forEach { implementation(it) }
 }

@@ -25,17 +25,15 @@ object AndroidX {
     const val appcompat = "androidx.appcompat:appcompat:${Versions.appcompat}"
     const val coreKtx = "androidx.core:core-ktx:${Versions.coreKtx}"
     const val material = "com.google.android.material:material:${Versions.material}"
-    const val recyclerview = "androidx.recyclerview:recyclerview:1.2.1"
     const val viewModelKtx = "androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.0"
     const val runtimeKtx = "androidx.lifecycle:lifecycle-runtime-ktx:${Versions.runtimeKtx}"
-
+    const val recyclerview = "androidx.recyclerview:recyclerview:1.2.1"
     val values = arrayListOf(
         appcompat,
         coreKtx,
         material,
         viewModelKtx,
-        runtimeKtx,
-        recyclerview
+        runtimeKtx
     )
 }
 
@@ -48,7 +46,7 @@ object Retrofit {
 
 object Depend {
     const val junit = "junit:junit:${Versions.junit}"
-    const val netCache = "io.github.AleynP:net-cache:1.0.0"
+    const val netCache = "com.github.AleynP:net-cache:1.0.0"
     const val androidTestJunit = "androidx.test.ext:junit:${Versions.junitExt}"
     const val espressoCore = "androidx.test.espresso:espresso-core:${Versions.espressoCore}"
     const val banner = "io.github.youth5201314:banner:${Versions.banner}"

@@ -7,6 +7,7 @@ import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.aleyn.mvvm.base.BaseFragment
+import com.aleyn.mvvm.base.BaseVMFragment
 import com.blankj.utilcode.util.LogUtils
 import com.pcl.mvvm.R
 import com.pcl.mvvm.databinding.HomeFragmentBinding
@@ -21,7 +22,7 @@ import com.youth.banner.Banner
  *   @author : Aleyn
  *   time   : 2019/11/02
  */
-class HomeFragment : BaseFragment<HomeViewModel, HomeFragmentBinding>() {
+class HomeFragment : BaseVMFragment<HomeViewModel, HomeFragmentBinding>() {
 
     private val mAdapter by lazy { HomeListAdapter() }
     private var page: Int = 0
