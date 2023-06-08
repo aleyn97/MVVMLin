@@ -21,7 +21,7 @@ class ProjectViewModel : BaseViewModel() {
     private val homeRepository by lazy { InjectorUtil.getHomeRepository() }
     private val itemOnClickListener = object : OnItemClickListener {
         override fun onItemClick(item: ArticlesBean) {
-            defUI.msgEvent.postValue(Message(0, obj = item))
+            launch { defUI.msgEvent.emit(Message(0, obj = item)) }
         }
     }
     var navTitle = ObservableArrayList<String>()

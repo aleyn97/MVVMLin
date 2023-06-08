@@ -1,12 +1,8 @@
 package com.pcl.mvvm.ui.home
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.aleyn.mvvm.base.BaseViewModel
-import com.aleyn.mvvm.event.SingleLiveEvent
 import com.aleyn.mvvm.extend.asResponse
 import com.aleyn.mvvm.extend.bindLoading
-import com.aleyn.mvvm.extend.getOrThrow
 import com.pcl.mvvm.network.entity.BannerBean
 import com.pcl.mvvm.network.entity.HomeListBean
 import com.pcl.mvvm.utils.InjectorUtil
@@ -24,8 +20,8 @@ class HomeViewModel : BaseViewModel() {
     private val _projectData = MutableSharedFlow<HomeListBean>()
     val projectData: SharedFlow<HomeListBean> = _projectData
 
-    private val _refreshState = SingleLiveEvent<Boolean>()
-    val refreshState: LiveData<Boolean> = _refreshState
+    private val _refreshState = MutableSharedFlow<Unit>()
+    val refreshState: SharedFlow<Unit> = _refreshState
 
     /**
      * Banner
@@ -46,7 +42,7 @@ class HomeViewModel : BaseViewModel() {
         launch {
             homeRepository.getHomeList(page, refresh)
                 .asResponse()
-                .onCompletion { if (refresh) _refreshState.call() }
+                .onCompletion { if (refresh) _refreshState.emit(Unit) }
                 .bindLoading(this@HomeViewModel)
                 .collect(_projectData)
         }

@@ -1,11 +1,26 @@
 package com.aleyn.mvvm.extend
 
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import com.aleyn.mvvm.app.MVVMLin
 import com.aleyn.mvvm.base.IBaseResponse
 import com.aleyn.mvvm.base.IViewModel
 import com.aleyn.mvvm.network.ERROR
 import com.aleyn.mvvm.network.ExceptionHandle
 import com.aleyn.mvvm.network.ResponseThrowable
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.transform
+import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 
 /**
  * @author : Aleyn
@@ -66,4 +81,32 @@ fun <T> IBaseResponse<T>.getOrThrow(): T {
  */
 fun <T> IBaseResponse<T>.check() {
     if (!isSuccess()) throw ResponseThrowable(this)
+}
+
+/**
+ * launch
+ */
+fun LifecycleOwner.launch(
+    context: CoroutineContext = MVVMLin.netException,
+    start: CoroutineStart = CoroutineStart.DEFAULT,
+    block: suspend CoroutineScope.() -> Unit
+) {
+    if (this is Fragment) {
+        viewLifecycleOwner.lifecycleScope.launch(context, start, block)
+    } else {
+        lifecycleScope.launch(context, start, block)
+    }
+}
+
+/**
+ * flowLaunch
+ */
+fun LifecycleOwner.flowLaunch(
+    context: CoroutineContext = EmptyCoroutineContext,
+    start: CoroutineStart = CoroutineStart.DEFAULT,
+    block: suspend CoroutineScope.() -> Unit
+) {
+    launch(context, start) {
+        repeatOnLifecycle(Lifecycle.State.STARTED) { block() }
+    }
 }

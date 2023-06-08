@@ -4,11 +4,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.flowWithLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.aleyn.mvvm.base.BaseFragment
 import com.aleyn.mvvm.base.BaseVMFragment
-import com.blankj.utilcode.util.LogUtils
+import com.aleyn.mvvm.extend.flowLaunch
 import com.pcl.mvvm.R
 import com.pcl.mvvm.databinding.HomeFragmentBinding
 import com.pcl.mvvm.network.entity.ArticlesBean
@@ -59,21 +60,26 @@ class HomeFragment : BaseVMFragment<HomeViewModel, HomeFragmentBinding>() {
     }
 
     override fun initObserve() {
-        viewModel.refreshState.observe(this@HomeFragment) {
-            if (mBinding.refreshHome.isRefreshing) mBinding.refreshHome.finishRefresh()
+        flowLaunch {
+            viewModel.refreshState.flowWithLifecycle(lifecycle).collect {
+                if (mBinding.refreshHome.isRefreshing) mBinding.refreshHome.finishRefresh()
+            }
         }
 
-        lifecycleScope.launchWhenCreated {
-            viewModel.mBanners.collect { banner.setDatas(it) }
-        }
-        lifecycleScope.launchWhenCreated {
-            viewModel.projectData.collect {
-                if (it.curPage == 1) mAdapter.setList(it.datas)
-                else mAdapter.addData(it.datas)
-                if (it.curPage == it.pageCount) mAdapter.loadMoreModule.loadMoreEnd()
-                else mAdapter.loadMoreModule.loadMoreComplete()
-                page = it.curPage
+
+        flowLaunch {
+            viewModel.mBanners.collect {
+                banner.setDatas(it)
             }
+        }
+        flowLaunch {
+            viewModel.projectData.collect {
+                    if (it.curPage == 1) mAdapter.setList(it.datas)
+                    else mAdapter.addData(it.datas)
+                    if (it.curPage == it.pageCount) mAdapter.loadMoreModule.loadMoreEnd()
+                    else mAdapter.loadMoreModule.loadMoreComplete()
+                    page = it.curPage
+                }
         }
     }
 
@@ -96,6 +102,18 @@ class HomeFragment : BaseVMFragment<HomeViewModel, HomeFragmentBinding>() {
      */
     private fun loadMore() {
         viewModel.getHomeList(page + 1)
+    }
+
+
+    override fun onResume() {
+        super.onResume()
+    }
+
+    override val defaultViewModelProviderFactory: ViewModelProvider.Factory
+        get() = super.defaultViewModelProviderFactory
+
+    override fun getViewLifecycleOwner(): LifecycleOwner {
+        return super.getViewLifecycleOwner()
     }
 
 }

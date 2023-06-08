@@ -5,8 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aleyn.mvvm.app.MVVMLin
 import com.aleyn.mvvm.event.Message
-import com.aleyn.mvvm.event.SingleLiveEvent
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.launch
 
 /**
  *   @author : Aleyn
@@ -14,7 +15,7 @@ import kotlinx.coroutines.*
  */
 open class BaseViewModel : ViewModel(), IViewModel, DefaultLifecycleObserver {
 
-    val defUI: UIChange by lazy { UIChange() }
+    val defUI: UIChange by lazy(LazyThreadSafetyMode.NONE) { UIChange() }
 
     /**
      * 所有网络请求都在 viewModelScope 域中启动，当页面销毁时会自动
@@ -27,16 +28,16 @@ open class BaseViewModel : ViewModel(), IViewModel, DefaultLifecycleObserver {
      * UI事件
      */
     inner class UIChange {
-        val showDialog by lazy { SingleLiveEvent<String>() }
-        val dismissDialog by lazy { SingleLiveEvent<Void>() }
-        val msgEvent by lazy { SingleLiveEvent<Message>() }
+        val showDialog = MutableSharedFlow<String>()
+        val dismissDialog = MutableSharedFlow<Unit>()
+        val msgEvent = MutableSharedFlow<Message>()
     }
 
     override fun showLoading(text: String) {
-        defUI.showDialog.postValue(text)
+        launch { defUI.showDialog.emit(text) }
     }
 
     override fun dismissLoading() {
-        defUI.dismissDialog.call()
+        launch { defUI.dismissDialog.emit(Unit) }
     }
 }

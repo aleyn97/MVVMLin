@@ -6,7 +6,6 @@ import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import com.aleyn.mvvm.base.BaseActivity
-import com.aleyn.mvvm.base.NoViewModel
 import com.pcl.mvvm.databinding.ActivityDetailBinding
 
 class DetailActivity : BaseActivity<ActivityDetailBinding>() {
@@ -31,7 +30,6 @@ class DetailActivity : BaseActivity<ActivityDetailBinding>() {
             setSupportZoom(true)
             builtInZoomControls = true
             displayZoomControls = false
-            setAppCacheEnabled(true)
             cacheMode = WebSettings.LOAD_DEFAULT
             useWideViewPort = true
             blockNetworkImage = false

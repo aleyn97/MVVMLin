@@ -1,6 +1,6 @@
+import com.aleyn.AndroidX
 import com.aleyn.BuildConfig
 import com.aleyn.Depend
-import com.aleyn.AndroidX
 import com.aleyn.Retrofit
 
 plugins {
@@ -11,7 +11,7 @@ plugins {
 
 android {
     compileSdk = BuildConfig.compileSdkVersion
-
+    namespace = "com.pcl.mvvm"
     defaultConfig {
         applicationId = BuildConfig.applicationId
         minSdk = BuildConfig.minSdkVersion
@@ -21,28 +21,33 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    buildTypes {
+    @Suppress("UnstableApiUsage") buildTypes {
         release {
             isMinifyEnabled = false
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
         }
     }
 
-    buildFeatures {
+    @Suppress("UnstableApiUsage") buildFeatures {
+        buildConfig = true
         dataBinding = true
         viewBinding = true
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
+
+    kotlin {
+        jvmToolchain(11)
+    }
+
 }
 
 dependencies {

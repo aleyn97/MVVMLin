@@ -7,9 +7,9 @@ package com.aleyn
 object Versions {
     const val retrofit = "2.9.0"
     const val appcompat = "1.4.2"
-    const val coreKtx = "1.7.0"
-    const val material = "1.6.1"
-    const val runtimeKtx = "2.5.0"
+    const val coreKtx = "1.10.1"
+    const val material = "1.9.0"
+    const val runtimeKtx = "2.6.1"
     const val junit = "4.13.2"
     const val junitExt = "1.1.3"
     const val espressoCore = "3.4.0"
@@ -25,7 +25,7 @@ object AndroidX {
     const val appcompat = "androidx.appcompat:appcompat:${Versions.appcompat}"
     const val coreKtx = "androidx.core:core-ktx:${Versions.coreKtx}"
     const val material = "com.google.android.material:material:${Versions.material}"
-    const val viewModelKtx = "androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.0"
+    const val viewModelKtx = "androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1"
     const val runtimeKtx = "androidx.lifecycle:lifecycle-runtime-ktx:${Versions.runtimeKtx}"
     const val recyclerview = "androidx.recyclerview:recyclerview:1.2.1"
     val values = arrayListOf(
