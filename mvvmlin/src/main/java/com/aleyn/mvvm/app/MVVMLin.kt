@@ -12,6 +12,7 @@ object MVVMLin {
 
     private val defNetException = CoroutineExceptionHandler { _, throwable ->
         val exception = ExceptionHandle.handleException(throwable)
+        throwable.printStackTrace()
         ToastUtils.showShort(exception.errMsg)
     }
 

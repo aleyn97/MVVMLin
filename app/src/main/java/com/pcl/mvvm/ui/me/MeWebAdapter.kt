@@ -1,7 +1,8 @@
 package com.pcl.mvvm.ui.me
 
+import androidx.databinding.DataBindingUtil
 import com.chad.library.adapter.base.BaseQuickAdapter
-import com.chad.library.adapter.base.viewholder.BaseDataBindingHolder
+import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import com.pcl.mvvm.R
 import com.pcl.mvvm.databinding.ItemUsedwebBinding
 import com.pcl.mvvm.network.entity.UsedWeb
@@ -12,11 +13,12 @@ import com.pcl.mvvm.network.entity.UsedWeb
  */
 
 class MeWebAdapter :
-    BaseQuickAdapter<UsedWeb, BaseDataBindingHolder<ItemUsedwebBinding>>(R.layout.item_usedweb) {
+    BaseQuickAdapter<UsedWeb, BaseViewHolder>(R.layout.item_usedweb) {
 
-    override fun convert(holder: BaseDataBindingHolder<ItemUsedwebBinding>, item: UsedWeb) {
-        holder.dataBinding?.itemData = item
-        holder.dataBinding?.executePendingBindings()
+    override fun convert(holder: BaseViewHolder, item: UsedWeb) {
+        val dataBinding = DataBindingUtil.bind<ItemUsedwebBinding>(holder.itemView)
+        dataBinding?.itemData = item
+        dataBinding?.executePendingBindings()
     }
 
 }

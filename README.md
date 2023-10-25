@@ -18,7 +18,7 @@
 
 [coil](https://github.com/coil-kt/coil)：图片加载(更适合KT的图片加载)
 
-[Retrofit](https://github.com/bumptech/glide)：网络请求
+[Retrofit](https://github.com/square/retrofit)：网络请求
 
 ## 使用方式
 

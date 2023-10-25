@@ -15,8 +15,8 @@ object Versions {
     const val espressoCore = "3.4.0"
 
     const val banner = "2.2.2"
-    const val BRAVH = "3.0.7"
-    const val coil = "2.1.0"
+    const val BRAVH = "3.0.14"
+    const val coil = "2.4.0"
     const val materialDialogs = "3.1.1"
     const val utilCode = "1.30.6"
 }
@@ -40,8 +40,9 @@ object AndroidX {
 object Retrofit {
     const val retrofit = "com.squareup.retrofit2:retrofit:${Versions.retrofit}"
     const val converterGson = "com.squareup.retrofit2:converter-gson:${Versions.retrofit}"
-    const val okhttpLogging = "com.squareup.okhttp3:logging-interceptor:4.9.3"
-    val values = arrayListOf(retrofit, converterGson, okhttpLogging)
+    const val okhttpLogging = "com.squareup.okhttp3:logging-interceptor:4.10.0"
+    const val okhttp3 = "com.squareup.okhttp3:okhttp:4.10.0"
+    val values = arrayListOf(retrofit, converterGson, okhttpLogging, okhttp3)
 }
 
 object Depend {
@@ -50,7 +51,7 @@ object Depend {
     const val androidTestJunit = "androidx.test.ext:junit:${Versions.junitExt}"
     const val espressoCore = "androidx.test.espresso:espresso-core:${Versions.espressoCore}"
     const val banner = "io.github.youth5201314:banner:${Versions.banner}"
-    const val BRVAH = "com.github.CymChad:BaseRecyclerViewAdapterHelper:${Versions.BRAVH}"
+    const val BRVAH = "io.github.cymchad:BaseRecyclerViewAdapterHelper:${Versions.BRAVH}"
     const val refreshKernel = "io.github.scwang90:refresh-layout-kernel:2.0.5"
     const val refreshHeader = "io.github.scwang90:refresh-header-classics:2.0.5"
     const val coil = "io.coil-kt:coil:${Versions.coil}" //图片加载
