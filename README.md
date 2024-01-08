@@ -82,8 +82,10 @@ class DetailActivity : 继承BaseVMActivity<NoViewModel, ViewBinding>() {
 }
 ```
 
-第一个泛型是ViewModel,如果页面很简单不需要ViewModel，可以继承BaseActivity。 第二个泛型是Databinding 或者 ViewBinding
-的生成类，如果页面使用Databinding或者ViewBinding的话，就要传对应的Binding生成类，如果不使用DataBinding或者ViewBinding，传 ViewBinding
+第一个泛型是ViewModel,如果页面很简单不需要ViewModel，可以继承BaseActivity。 第二个泛型是Databinding 或者
+ViewBinding
+的生成类，如果页面使用Databinding或者ViewBinding的话，就要传对应的Binding生成类，如果不使用DataBinding或者ViewBinding，传
+ViewBinding
 。基类不用初始化mBinding而会使用常规方式。
 ** layoutId ** 方法返回对应布局。当使用ViewBinding时 不用重写此方法，其余都要重写 返回布局 Id
 **initView()** 和 **initData()** 为默认实现，做初始化UI等操作
@@ -131,6 +133,12 @@ MVVMLin.setNetException(CoroutineExceptionHandler { context, e ->
 
 #### Flow 方式(同 RxJava 相似)
 
+```
+// Service 用 Flow 接收
+@GET("xxx/xxx")
+fun getBannerData(): Flow<BaseResult<XXX>>>
+```
+
 ``` kotlin
 class HomeViewModel : BaseViewModel() {
     private val homeRepository by lazy { InjectorUtil.getHomeRepository() }
@@ -157,7 +165,14 @@ class HomeViewModel : BaseViewModel() {
 - bindLoading: 绑定Loading
 - netCache: 自定义错误处理,返回的是 ResponseThrowable
 
-#### 普通方式
+#### 普通方式(不使用Flow)
+
+注意不使用Flow时， Service 返回值直接用基类,并添加上 `suspend`
+
+```
+@GET("xxx/xxx")
+suspend fun getBannerData(): BaseResult<XXX>
+```
 
 ```
 class ProjectViewModel : BaseViewModel() {
@@ -217,7 +232,8 @@ Demo中只展示了三种列表使用方式
 
 #### 使用Databinging,结合[BRVAH](https://github.com/evant/binding-collection-adapter)
 
-[BRVAH](https://github.com/CymChad/BaseRecyclerViewAdapterHelper) 对DataBinding也做了支持，详见Demo的 **
+[BRVAH](https://github.com/CymChad/BaseRecyclerViewAdapterHelper)
+对DataBinding也做了支持，详见Demo的 **
 MeFragment**
 
 ## 最后
