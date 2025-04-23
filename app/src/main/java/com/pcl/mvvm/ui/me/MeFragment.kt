@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.aleyn.mvvm.base.BaseVMFragment
+import com.aleyn.mvvm.extend.flowLaunch
 import com.pcl.mvvm.R
 import com.pcl.mvvm.databinding.MeFragmentBinding
 import com.pcl.mvvm.ui.detail.DetailActivity
@@ -16,8 +17,6 @@ class MeFragment : BaseVMFragment<MeViewModel, MeFragmentBinding>() {
     companion object {
         fun newInstance() = MeFragment()
     }
-
-    override val layoutId get() = R.layout.me_fragment
 
     override fun initView(savedInstanceState: Bundle?) {
         with(mBinding.rvMeUesdWeb) {
@@ -32,12 +31,17 @@ class MeFragment : BaseVMFragment<MeViewModel, MeFragmentBinding>() {
             startActivity(intent)
         }
 
-        lifecycleScope.launchWhenCreated {
+
+    }
+
+    override fun initObserve() {
+        flowLaunch {
             viewModel.popularWeb.collect {
                 mAdapter.setList(it)
             }
         }
     }
+
 
     override fun lazyLoadData() {
         viewModel.getPopularWeb()

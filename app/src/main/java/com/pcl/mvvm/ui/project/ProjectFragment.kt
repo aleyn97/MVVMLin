@@ -2,15 +2,15 @@ package com.pcl.mvvm.ui.project
 
 import android.content.Intent
 import android.os.Bundle
-import com.aleyn.mvvm.base.BaseFragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.aleyn.mvvm.base.BaseVMFragment
 import com.aleyn.mvvm.event.Message
-import com.pcl.mvvm.R
+import com.aleyn.mvvm.extend.flowLaunch
+import com.google.android.material.tabs.TabLayout
 import com.pcl.mvvm.databinding.ProjectFragmentBinding
 import com.pcl.mvvm.network.entity.ArticlesBean
 import com.pcl.mvvm.ui.detail.DetailActivity
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
+import com.pcl.mvvm.ui.project.adapter.ProjectAdapter
 
 class ProjectFragment : BaseVMFragment<ProjectViewModel, ProjectFragmentBinding>() {
 
@@ -19,16 +19,46 @@ class ProjectFragment : BaseVMFragment<ProjectViewModel, ProjectFragmentBinding>
         fun newInstance() = ProjectFragment()
     }
 
-    override val layoutId get() = R.layout.project_fragment
+    private val mAdapter by lazy(LazyThreadSafetyMode.NONE) { ProjectAdapter() }
 
     override fun initView(savedInstanceState: Bundle?) {
-        mBinding.viewModel = viewModel
+        mBinding.rvProject.apply {
+            layoutManager = LinearLayoutManager(requireActivity())
+            adapter = mAdapter
+        }
+        mBinding.tbProject.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab) {
+                viewModel.getProjectList(tab.position)
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab) {
+            }
+
+            override fun onTabReselected(tab: TabLayout.Tab) {
+            }
+        })
     }
 
-    @FlowPreview
-    @ExperimentalCoroutinesApi
     override fun lazyLoadData() {
         viewModel.getFirstData()
+    }
+
+
+    override fun initObserve() {
+        flowLaunch {
+            viewModel.navData.collect { list ->
+                list.map {
+                    mBinding.tbProject.newTab().apply { text = it.name }
+                }.forEach {
+                    mBinding.tbProject.addTab(it)
+                }
+            }
+        }
+        flowLaunch {
+            viewModel.items.collect {
+                mAdapter.setList(it)
+            }
+        }
     }
 
     override fun handleEvent(msg: Message) {
@@ -36,7 +66,7 @@ class ProjectFragment : BaseVMFragment<ProjectViewModel, ProjectFragmentBinding>
             0 -> {
                 val bean = msg.obj as ArticlesBean
                 val intent = Intent().apply {
-                    setClass(activity!!, DetailActivity::class.java)
+                    setClass(requireActivity(), DetailActivity::class.java)
                     putExtra("url", bean.link)
                 }
                 startActivity(intent)

@@ -30,17 +30,17 @@ abstract class BaseVMFragment<VM : BaseViewModel, VB : ViewBinding> : BaseFragme
      */
     private fun registerDefUIChange() {
         flowLaunch {
-            viewModel.defUI.showDialog.flowWithLifecycle(lifecycle).collect {
+            viewModel.defUI.showDialog.collect {
                 showLoading()
             }
         }
         flowLaunch {
-            viewModel.defUI.dismissDialog.flowWithLifecycle(lifecycle).collect {
+            viewModel.defUI.dismissDialog.collect {
                 dismissLoading()
             }
         }
         flowLaunch {
-            viewModel.defUI.msgEvent.flowWithLifecycle(lifecycle).collect {
+            viewModel.defUI.msgEvent.collect {
                 handleEvent(it)
             }
         }

@@ -1,6 +1,6 @@
 package com.pcl.mvvm.ui.me
 
-import androidx.databinding.DataBindingUtil
+import com.aleyn.mvvm.extend.binding
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import com.pcl.mvvm.R
@@ -16,9 +16,9 @@ class MeWebAdapter :
     BaseQuickAdapter<UsedWeb, BaseViewHolder>(R.layout.item_usedweb) {
 
     override fun convert(holder: BaseViewHolder, item: UsedWeb) {
-        val dataBinding = DataBindingUtil.bind<ItemUsedwebBinding>(holder.itemView)
-        dataBinding?.itemData = item
-        dataBinding?.executePendingBindings()
+        val binding = holder.binding(ItemUsedwebBinding::bind)
+        binding.tvName.text = item.name
+        binding.tvLink.text = item.link
     }
 
 }

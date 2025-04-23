@@ -4,9 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.LayoutRes
-import androidx.databinding.DataBindingUtil
-import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.viewbinding.ViewBinding
@@ -15,6 +12,7 @@ import com.afollestad.materialdialogs.customview.customView
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.aleyn.mvvm.R
 import com.aleyn.mvvm.event.Message
+import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.ParameterizedType
 
 /**
@@ -31,14 +29,6 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment() {
     private var isFirst: Boolean = true
 
     private var dialog: MaterialDialog? = null
-
-    /**
-     * 使用 DataBinding时,要重写此方法返回相应的布局 id
-     * 使用ViewBinding时，不用重写此方法
-     */
-    @LayoutRes
-    open val layoutId = 0
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -103,30 +93,41 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment() {
     }
 
 
-    private fun initBinding(inflater: LayoutInflater, container: ViewGroup?): View {
-        val type = javaClass.genericSuperclass
-        if (type is ParameterizedType) {
-            val cls = type.actualTypeArguments[1] as Class<*>
-            return when {
-                ViewDataBinding::class.java.isAssignableFrom(cls) && cls != ViewDataBinding::class.java -> {
-                    if (layoutId == 0) throw IllegalArgumentException("Using DataBinding requires overriding method layoutId")
-                    _binding = DataBindingUtil.inflate(inflater, layoutId, container, false)
-                    (mBinding as ViewDataBinding).lifecycleOwner = this
-                    mBinding.root
-                }
-                ViewBinding::class.java.isAssignableFrom(cls) && cls != ViewBinding::class.java -> {
-                    cls.getDeclaredMethod("inflate", LayoutInflater::class.java).let {
-                        @Suppress("UNCHECKED_CAST")
-                        _binding = it.invoke(null, inflater) as VB
-                        mBinding.root
+    @Suppress("UNCHECKED_CAST")
+    open fun initBinding(inflater: LayoutInflater, container: ViewGroup?): View {
+        var type = javaClass.genericSuperclass
+        var superclass = javaClass.superclass
+        while (superclass != null) {
+            if (type is ParameterizedType) {
+                try {
+                    type.actualTypeArguments.find {
+                        ViewBinding::class.java.isAssignableFrom(it as Class<*>)
+                    }?.let {
+                        val cls = it as Class<VB>
+                        val method = cls.getDeclaredMethod(
+                            "inflate",
+                            LayoutInflater::class.java,
+                            ViewGroup::class.java,
+                            Boolean::class.java
+                        )
+                        _binding = method.invoke(null, inflater, container, false) as VB
+                        return mBinding.root
                     }
-                }
-                else -> {
-                    if (layoutId == 0) throw IllegalArgumentException("If you don't use ViewBinding, you need to override method layoutId")
-                    inflater.inflate(layoutId, container, false)
+                } catch (_: NoSuchMethodException) {
+                } catch (_: ClassCastException) {
+                } catch (e: InvocationTargetException) {
+                    throw e.targetException
                 }
             }
-        } else throw IllegalArgumentException("Generic error")
+            type = superclass.genericSuperclass
+            superclass = superclass.superclass
+        }
+        throw IllegalArgumentException("ViewBinding class not found")
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
 }

@@ -2,6 +2,8 @@ package com.aleyn.mvvm.base
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
@@ -11,61 +13,62 @@ import com.afollestad.materialdialogs.customview.customView
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.aleyn.mvvm.R
 import com.aleyn.mvvm.event.Message
+import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.ParameterizedType
 
 /**
  *   @author : Aleyn
  *   time   : 2019/11/01
  */
-abstract class BaseActivity<DB : ViewBinding> : AppCompatActivity() {
+abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity() {
 
-    protected lateinit var mBinding: DB
+    protected lateinit var mBinding: VB
 
     private var dialog: MaterialDialog? = null
 
-    open val layoutId: Int = 0
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        initViewDataBinding()
+        setContentView(initBinding())
         initView(savedInstanceState)
         initObserve()
         initData()
     }
 
     abstract fun initView(savedInstanceState: Bundle?)
+
     open fun initObserve() {}
+
     abstract fun initData()
 
 
     /**
-     * DataBinding or ViewBinding
+     * ViewBinding
      */
-    private fun initViewDataBinding() {
-        val type = javaClass.genericSuperclass
-        if (type is ParameterizedType) {
-            val cls = type.actualTypeArguments
-                .map { it as Class<*> }
-                .first { ViewBinding::class.java.isAssignableFrom(it) }
-            when {
-                ViewDataBinding::class.java.isAssignableFrom(cls) && cls != ViewDataBinding::class.java -> {
-                    if (layoutId == 0) throw IllegalArgumentException("Using DataBinding requires overriding method layoutId")
-                    mBinding = DataBindingUtil.setContentView(this, layoutId)
-                    (mBinding as ViewDataBinding).lifecycleOwner = this
-                }
-                ViewBinding::class.java.isAssignableFrom(cls) && cls != ViewBinding::class.java -> {
-                    cls.getDeclaredMethod("inflate", LayoutInflater::class.java).let {
-                        @Suppress("UNCHECKED_CAST")
-                        mBinding = it.invoke(null, layoutInflater) as DB
-                        setContentView(mBinding.root)
+    @Suppress("UNCHECKED_CAST")
+    open fun initBinding(): View {
+        var type = javaClass.genericSuperclass
+        var superclass = javaClass.superclass
+        while (superclass != null) {
+            if (type is ParameterizedType) {
+                try {
+                    type.actualTypeArguments.find {
+                        ViewBinding::class.java.isAssignableFrom(it as Class<*>)
+                    }?.let {
+                        val cls = it as Class<VB>
+                        val method = cls.getDeclaredMethod("inflate", LayoutInflater::class.java)
+                        mBinding = method.invoke(null, layoutInflater) as VB
+                        return mBinding.root
                     }
-                }
-                else -> {
-                    if (layoutId == 0) throw IllegalArgumentException("If you don't use ViewBinding, you need to override method layoutId")
-                    setContentView(layoutId)
+                } catch (_: NoSuchMethodException) {
+                } catch (_: ClassCastException) {
+                } catch (e: InvocationTargetException) {
+                    throw e.targetException
                 }
             }
-        } else throw IllegalArgumentException("Generic error")
+            type = superclass.genericSuperclass
+            superclass = superclass.superclass
+        }
+        throw IllegalArgumentException("ViewBinding class not found")
     }
 
     open fun handleEvent(msg: Message) {}

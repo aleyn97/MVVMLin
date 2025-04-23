@@ -3,6 +3,7 @@ package com.pcl.mvvm.ui.home
 import com.aleyn.mvvm.base.BaseViewModel
 import com.aleyn.mvvm.extend.asResponse
 import com.aleyn.mvvm.extend.bindLoading
+import com.aleyn.mvvm.extend.netCache
 import com.pcl.mvvm.network.entity.BannerBean
 import com.pcl.mvvm.network.entity.HomeListBean
 import com.pcl.mvvm.utils.InjectorUtil
@@ -30,6 +31,9 @@ class HomeViewModel : BaseViewModel() {
         launch {
             homeRepository.getBannerData(refresh)
                 .asResponse()
+                .netCache {
+                    //异常处理
+                }
                 .collect(_banners)
         }
     }

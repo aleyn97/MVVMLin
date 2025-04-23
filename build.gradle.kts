@@ -4,6 +4,3 @@ plugins {
     kotlin("android") version ("1.8.20") apply (false)
 }
 
-tasks.register("clean", Delete::class) {
-    delete(rootProject.buildDir)
-}

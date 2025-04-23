@@ -6,7 +6,6 @@ import com.aleyn.Retrofit
 plugins {
     id("com.android.application")
     kotlin("android")
-    kotlin("kapt")
 }
 
 android {
@@ -38,7 +37,6 @@ android {
 
     @Suppress("UnstableApiUsage") buildFeatures {
         buildConfig = true
-        dataBinding = true
         viewBinding = true
     }
 

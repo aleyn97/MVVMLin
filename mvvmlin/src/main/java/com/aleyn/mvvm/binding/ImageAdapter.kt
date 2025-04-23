@@ -10,6 +10,7 @@ import coil.load
  */
 object ImageAdapter {
 
+    @Deprecated("use ViewBinding")
     @BindingAdapter(value = ["url", "placeholder"], requireAll = false)
     @JvmStatic
     fun setImageUrl(imageView: ImageView, url: String, placeholder: Int) {

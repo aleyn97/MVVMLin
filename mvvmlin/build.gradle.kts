@@ -6,7 +6,6 @@ import com.aleyn.Retrofit
 plugins {
     id("com.android.library")
     kotlin("android")
-    kotlin("kapt")
     `maven-publish`
 }
 

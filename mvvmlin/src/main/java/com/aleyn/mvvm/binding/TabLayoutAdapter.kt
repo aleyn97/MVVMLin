@@ -9,6 +9,7 @@ import com.google.android.material.tabs.TabLayout
  */
 object TabLayoutAdapter {
 
+    @Deprecated("use ViewBinding")
     @BindingAdapter(value = ["items"], requireAll = false)
     @JvmStatic
     fun setTabText(tabLayout: TabLayout, items: List<String>) {
@@ -18,11 +19,11 @@ object TabLayoutAdapter {
     }
 
 
+    @Deprecated("use ViewBinding")
     @BindingAdapter(value = ["tabItemClick"], requireAll = false)
     @JvmStatic
     fun tabItemClick(tabLayout: TabLayout, listener: TabLayout.OnTabSelectedListener) {
         tabLayout.addOnTabSelectedListener(listener)
     }
-
 
 }

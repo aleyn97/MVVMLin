@@ -1,16 +1,13 @@
 package com.pcl.mvvm.ui.project
 
-import androidx.databinding.ObservableArrayList
 import com.aleyn.mvvm.base.BaseViewModel
-import com.aleyn.mvvm.event.Message
 import com.aleyn.mvvm.extend.getOrThrow
-import com.google.android.material.tabs.TabLayout
-import com.pcl.mvvm.BR
-import com.pcl.mvvm.R
 import com.pcl.mvvm.network.entity.ArticlesBean
 import com.pcl.mvvm.network.entity.NavTypeBean
 import com.pcl.mvvm.utils.InjectorUtil
-import me.tatarka.bindingcollectionadapter2.ItemBinding
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 /**
  *   @author : Aleyn
@@ -19,18 +16,17 @@ import me.tatarka.bindingcollectionadapter2.ItemBinding
 class ProjectViewModel : BaseViewModel() {
 
     private val homeRepository by lazy { InjectorUtil.getHomeRepository() }
-    private val itemOnClickListener = object : OnItemClickListener {
-        override fun onItemClick(item: ArticlesBean) {
-            launch { defUI.msgEvent.emit(Message(0, obj = item)) }
-        }
-    }
-    var navTitle = ObservableArrayList<String>()
-    var navData = ObservableArrayList<NavTypeBean>()
-    var items = ObservableArrayList<ArticlesBean>()
-    var itemBinding = ItemBinding.of<ArticlesBean>(BR.itemBean, R.layout.item_project_list)
-        .bindExtra(BR.listenner, itemOnClickListener)
+
+    private val _navData = MutableStateFlow<List<NavTypeBean>>(emptyList())
+    val navData = _navData.asStateFlow()
+
+    private val _items = MutableStateFlow<List<ArticlesBean>>(emptyList())
+    val items = _items.asStateFlow()
 
     private var page: Int = 0
+
+    var currentIndex = -1
+        private set
 
     /**
      * 顺序请求
@@ -39,41 +35,24 @@ class ProjectViewModel : BaseViewModel() {
         launch {
             //tab 数据
             val navResult = homeRepository.getNaviJson().getOrThrow()
-            navData.addAll(navResult)
-            navResult.forEach { item -> navTitle.add(item.name) }
+            _navData.update { navResult }
 
             //tab对应列表数据
-            val listBean = homeRepository.getProjectList(page, navResult.first().id).getOrThrow()
-            items.addAll(listBean.datas)
+            getProjectList(0)
         }
     }
 
-    fun getProjectList(cid: Int) {
+    fun getProjectList(index: Int = currentIndex) {
+        val cid = navData.value.getOrNull(index)?.id ?: return
         launch {
-            homeRepository.getProjectList(page, cid).getOrThrow().let {
-                items.clear()
-                items.addAll(it.datas)
+            val list = homeRepository.getProjectList(page, cid).getOrThrow()
+            val newList = ArrayList<ArticlesBean>()
+            if (currentIndex == index) {
+                newList.addAll(items.value)
             }
+            newList.addAll(list.datas)
+            _items.update { newList }
+            currentIndex = index
         }
-    }
-
-
-    var tabOnClickListener = object : TabLayout.OnTabSelectedListener {
-        override fun onTabReselected(p0: TabLayout.Tab?) {
-        }
-
-        override fun onTabUnselected(p0: TabLayout.Tab?) {
-        }
-
-        override fun onTabSelected(p0: TabLayout.Tab?) {
-            p0?.let {
-                getProjectList(navData[it.position].id)
-            }
-        }
-    }
-
-
-    interface OnItemClickListener {
-        fun onItemClick(item: ArticlesBean)
     }
 }

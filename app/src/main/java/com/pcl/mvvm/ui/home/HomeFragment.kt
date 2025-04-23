@@ -10,6 +10,7 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.aleyn.mvvm.base.BaseVMFragment
 import com.aleyn.mvvm.extend.flowLaunch
+import com.aleyn.mvvm.extend.launch
 import com.pcl.mvvm.R
 import com.pcl.mvvm.databinding.HomeFragmentBinding
 import com.pcl.mvvm.network.entity.ArticlesBean
@@ -19,7 +20,6 @@ import com.pcl.mvvm.utils.GlideImageLoader
 import com.youth.banner.Banner
 
 /**
- * 此页面使用 ViewBinding
  *   @author : Aleyn
  *   time   : 2019/11/02
  */
@@ -60,26 +60,29 @@ class HomeFragment : BaseVMFragment<HomeViewModel, HomeFragmentBinding>() {
     }
 
     override fun initObserve() {
-        flowLaunch {
-            viewModel.refreshState.flowWithLifecycle(lifecycle).collect {
-                if (mBinding.refreshHome.isRefreshing) mBinding.refreshHome.finishRefresh()
-            }
+        launch {
+            viewModel.refreshState
+                .flowWithLifecycle(viewLifecycleOwner.lifecycle)
+                .collect {
+                    if (mBinding.refreshHome.isRefreshing) mBinding.refreshHome.finishRefresh()
+                }
         }
 
-
+        // 这种写法赞同于上边 flowWithLifecycle 写法
         flowLaunch {
             viewModel.mBanners.collect {
                 banner.setDatas(it)
             }
         }
+
         flowLaunch {
             viewModel.projectData.collect {
-                    if (it.curPage == 1) mAdapter.setList(it.datas)
-                    else mAdapter.addData(it.datas)
-                    if (it.curPage == it.pageCount) mAdapter.loadMoreModule.loadMoreEnd()
-                    else mAdapter.loadMoreModule.loadMoreComplete()
-                    page = it.curPage
-                }
+                if (it.curPage == 1) mAdapter.setList(it.datas)
+                else mAdapter.addData(it.datas)
+                if (it.curPage == it.pageCount) mAdapter.loadMoreModule.loadMoreEnd()
+                else mAdapter.loadMoreModule.loadMoreComplete()
+                page = it.curPage
+            }
         }
     }
 
