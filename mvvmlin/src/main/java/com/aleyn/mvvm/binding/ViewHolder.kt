@@ -1,4 +1,4 @@
-package com.aleyn.mvvm.extend
+package com.aleyn.mvvm.binding
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
@@ -9,6 +9,9 @@ import androidx.viewbinding.ViewBinding
  * @date : 2025/4/23 20:02
  */
 
+/**
+ * Adapter 获取 ViewBinding
+ */
 @Suppress("UNCHECKED_CAST")
 inline fun <T : ViewBinding> RecyclerView.ViewHolder.binding(
     crossinline vbCreate: (View) -> T,

@@ -10,7 +10,6 @@ import com.pcl.mvvm.databinding.ActivityDetailBinding
 
 class DetailActivity : BaseActivity<ActivityDetailBinding>() {
 
-
     override fun initView(savedInstanceState: Bundle?) {
         initWebView()
     }

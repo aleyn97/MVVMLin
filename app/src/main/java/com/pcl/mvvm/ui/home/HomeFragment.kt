@@ -4,11 +4,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.flowWithLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.aleyn.mvvm.base.BaseVMFragment
+import com.aleyn.mvvm.base.BaseFragment
 import com.aleyn.mvvm.extend.flowLaunch
 import com.aleyn.mvvm.extend.launch
 import com.pcl.mvvm.R
@@ -23,11 +22,17 @@ import com.youth.banner.Banner
  *   @author : Aleyn
  *   time   : 2019/11/02
  */
-class HomeFragment : BaseVMFragment<HomeViewModel, HomeFragmentBinding>() {
+class HomeFragment : BaseFragment<HomeFragmentBinding>() {
+
+    /**
+     * 推荐官方获取 ViewModel 方式
+     */
+    private val viewModel by viewModels<HomeViewModel>()
 
     private val mAdapter by lazy { HomeListAdapter() }
     private var page: Int = 0
     private lateinit var banner: Banner<BannerBean, GlideImageLoader>
+
 
     companion object {
         fun newInstance() = HomeFragment()
@@ -57,6 +62,7 @@ class HomeFragment : BaseVMFragment<HomeViewModel, HomeFragmentBinding>() {
         mBinding.refreshHome.setOnRefreshListener {
             dropDownRefresh()
         }
+        registerDefUIChange(viewModel)//绑定默认UI 事件
     }
 
     override fun initObserve() {
@@ -68,7 +74,7 @@ class HomeFragment : BaseVMFragment<HomeViewModel, HomeFragmentBinding>() {
                 }
         }
 
-        // 这种写法赞同于上边 flowWithLifecycle 写法
+        // 这种写法等同于上边 flowWithLifecycle 写法
         flowLaunch {
             viewModel.mBanners.collect {
                 banner.setDatas(it)
@@ -110,13 +116,6 @@ class HomeFragment : BaseVMFragment<HomeViewModel, HomeFragmentBinding>() {
 
     override fun onResume() {
         super.onResume()
-    }
-
-    override val defaultViewModelProviderFactory: ViewModelProvider.Factory
-        get() = super.defaultViewModelProviderFactory
-
-    override fun getViewLifecycleOwner(): LifecycleOwner {
-        return super.getViewLifecycleOwner()
     }
 
 }

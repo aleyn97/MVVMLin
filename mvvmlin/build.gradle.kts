@@ -1,8 +1,3 @@
-import com.aleyn.AndroidX
-import com.aleyn.BuildConfig
-import com.aleyn.Depend
-import com.aleyn.Retrofit
-
 plugins {
     id("com.android.library")
     kotlin("android")
@@ -10,14 +5,13 @@ plugins {
 }
 
 android {
-    compileSdk = BuildConfig.compileSdkVersion
+    compileSdk = libs.versions.compileSdk.get().toInt()
     namespace = "com.aleyn.mvvm"
     defaultConfig {
-        minSdk = BuildConfig.minSdkVersion
+        minSdk = libs.versions.minSdkVersion.get().toInt()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    @Suppress("UnstableApiUsage")
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -27,9 +21,7 @@ android {
         }
     }
 
-    @Suppress("UnstableApiUsage")
     buildFeatures {
-        dataBinding = true
         viewBinding = true
     }
 
@@ -63,14 +55,14 @@ afterEvaluate {
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     //androidx
-    AndroidX.values.forEach { implementation(it) }
+    implementation(libs.appcompat)
+    implementation(libs.viewModelKtx)
+    implementation(libs.recyclerview)
     //network
-    Retrofit.values.forEach { compileOnly(it) }
+    compileOnly(libs.bundles.netWork)
     //material-dialogs
-    api(Depend.dialogs)
-    api(Depend.dialogsCore)
-    //coil
-    api(Depend.coil)
+    api(libs.dialogs)
+    api(libs.dialogsCore)
     // utils 集合了大量常用的工具类
-    api(Depend.utilCode)
+    api(libs.utilCode)
 }

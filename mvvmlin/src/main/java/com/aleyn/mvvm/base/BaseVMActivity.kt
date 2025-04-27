@@ -3,7 +3,6 @@ package com.aleyn.mvvm.base
 import android.os.Bundle
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewbinding.ViewBinding
-import com.aleyn.mvvm.extend.flowLaunch
 import java.lang.reflect.ParameterizedType
 
 /**
@@ -18,29 +17,8 @@ abstract class BaseVMActivity<VM : BaseViewModel, VB : ViewBinding> : BaseActivi
         createViewModel()
         lifecycle.addObserver(viewModel)
         //注册 UI事件
-        registorDefUIChange()
+        registerDefUIChange(viewModel)
         super.onCreate(savedInstanceState)
-    }
-
-    /**
-     * 注册 UI 事件
-     */
-    private fun registorDefUIChange() {
-        flowLaunch {
-            viewModel.defUI.showDialog.collect {
-                showLoading()
-            }
-        }
-        flowLaunch {
-            viewModel.defUI.dismissDialog.collect {
-                dismissLoading()
-            }
-        }
-        flowLaunch {
-            viewModel.defUI.msgEvent.collect {
-                handleEvent(it)
-            }
-        }
     }
 
     /**

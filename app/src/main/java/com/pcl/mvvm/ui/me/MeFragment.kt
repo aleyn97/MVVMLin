@@ -2,11 +2,9 @@ package com.pcl.mvvm.ui.me
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.aleyn.mvvm.base.BaseVMFragment
 import com.aleyn.mvvm.extend.flowLaunch
-import com.pcl.mvvm.R
 import com.pcl.mvvm.databinding.MeFragmentBinding
 import com.pcl.mvvm.ui.detail.DetailActivity
 

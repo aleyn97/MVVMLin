@@ -1,26 +1,21 @@
-import com.aleyn.AndroidX
-import com.aleyn.BuildConfig
-import com.aleyn.Depend
-import com.aleyn.Retrofit
-
 plugins {
     id("com.android.application")
     kotlin("android")
 }
 
 android {
-    compileSdk = BuildConfig.compileSdkVersion
+    compileSdk = libs.versions.compileSdk.get().toInt()
     namespace = "com.pcl.mvvm"
     defaultConfig {
-        applicationId = BuildConfig.applicationId
-        minSdk = BuildConfig.minSdkVersion
-        targetSdk = BuildConfig.targetSdkVersion
-        versionCode = BuildConfig.versionCode
-        versionName = BuildConfig.versionName
+        applicationId = libs.versions.applicationId.get()
+        minSdk = libs.versions.minSdkVersion.get().toInt()
+        targetSdk = libs.versions.minSdkVersion.get().toInt()
+        versionCode = libs.versions.versionCode.get().toInt()
+        versionName = libs.versions.versionName.get()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    @Suppress("UnstableApiUsage") buildTypes {
+    buildTypes {
         debug {
             isMinifyEnabled = false
             proguardFiles(
@@ -35,7 +30,7 @@ android {
         }
     }
 
-    @Suppress("UnstableApiUsage") buildFeatures {
+    buildFeatures {
         buildConfig = true
         viewBinding = true
     }
@@ -56,20 +51,20 @@ android {
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
-    AndroidX.values.forEach { implementation(it) }
-    implementation(AndroidX.recyclerview)
-    testImplementation(Depend.junit)
-    androidTestImplementation(Depend.androidTestJunit)
-    androidTestImplementation(Depend.espressoCore)
+    implementation(libs.bundles.androidX)
+    implementation(libs.material)
+    implementation(libs.recyclerview)
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidTestJunit)
+    androidTestImplementation(libs.espressoCore)
     //MVVMLin
     implementation(project("path" to ":mvvmlin"))
     //第三方
-    implementation(Depend.banner)
-    implementation(Depend.BRVAH)
-    implementation(Depend.refreshKernel)
-    implementation(Depend.refreshHeader)
-    implementation(Depend.bdclta)
-    implementation(Depend.bdcltaRv)
-    implementation(Depend.netCache)
-    Retrofit.values.forEach { implementation(it) }
+    implementation(libs.banner)
+    implementation(libs.bravh)
+    implementation(libs.refreshKernel)
+    implementation(libs.refreshHeader)
+    implementation(libs.netCache)
+    implementation(libs.bundles.netWork)
+    implementation(libs.coil)
 }

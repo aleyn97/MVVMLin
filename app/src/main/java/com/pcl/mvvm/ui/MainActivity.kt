@@ -2,8 +2,7 @@ package com.pcl.mvvm.ui
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import com.aleyn.mvvm.base.BaseVMActivity
-import com.aleyn.mvvm.base.NoViewModel
+import com.aleyn.mvvm.base.BaseActivity
 import com.blankj.utilcode.util.BarUtils
 import com.blankj.utilcode.util.ColorUtils
 import com.blankj.utilcode.util.PermissionUtils
@@ -13,12 +12,11 @@ import com.pcl.mvvm.ui.home.HomeFragment
 import com.pcl.mvvm.ui.me.MeFragment
 import com.pcl.mvvm.ui.project.ProjectFragment
 
-class MainActivity : BaseVMActivity<NoViewModel, ActivityMainBinding>() {
+class MainActivity : BaseActivity<ActivityMainBinding>() {
 
     private val fragments = ArrayList<Fragment>()
 
     private lateinit var showFragment: Fragment
-
 
     override fun initView(savedInstanceState: Bundle?) {
         BarUtils.setStatusBarColor(this, ColorUtils.getColor(R.color.colorPrimary))

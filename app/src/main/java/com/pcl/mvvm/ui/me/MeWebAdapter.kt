@@ -1,6 +1,6 @@
 package com.pcl.mvvm.ui.me
 
-import com.aleyn.mvvm.extend.binding
+import com.aleyn.mvvm.binding.binding
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import com.pcl.mvvm.R

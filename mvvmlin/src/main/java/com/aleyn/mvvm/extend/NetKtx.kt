@@ -104,9 +104,12 @@ fun LifecycleOwner.launch(
 fun LifecycleOwner.flowLaunch(
     context: CoroutineContext = EmptyCoroutineContext,
     start: CoroutineStart = CoroutineStart.DEFAULT,
+    state: Lifecycle.State = Lifecycle.State.STARTED,
     block: suspend CoroutineScope.() -> Unit
 ) {
-    launch(context, start) {
-        repeatOnLifecycle(Lifecycle.State.STARTED) { block() }
+    val newContext = if (context is EmptyCoroutineContext) MVVMLin.netException
+    else MVVMLin.netException + context
+    launch(newContext, start) {
+        repeatOnLifecycle(state) { block() }
     }
 }

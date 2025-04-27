@@ -1,14 +1,18 @@
 # MVVMLin
 
-一个基于MVVM用Kotlin+Retrofit+协程+Databinding(ViewBinding)+LiveData来封装的快速开发框架：
+一个基于MVVM用Kotlin+Retrofit+协程+ViewBinding+Flow来封装的快速开发框架：
 项目地址：[MVVMLin](https://github.com/AleynP/MVVMLin)
+
+2.0.1 版本后不再支持 DataBinding, 原因是 DataBinding 需要 kapt 插件的支持, 目前有速度更快的 KSP 来替代
+kapt,但是 KSP 压根没打算支持DataBinding。Google 也在放弃DataBinding 了。猜测原因是有更好用的
+Compose 出来了，就不再对 DataBinding 投入太多工夫了
 
 ## 框架简介
 
 - **使用技术**
-  基于MVVM模式用了 kotlin+协程+retrofit+livedata+DataBinding
+  基于MVVM模式用了 kotlin+协程+retrofit+livedata+ViewBinding
 - **基本封装**
-  封装了BaseActivity、BaseFragment、BaseViewModel基于协和的网络请方式更加方便，考虑到有些小伙伴不太喜欢用DataBinding在xml中绑定数据的方式，也提供了相应的适配，两种方式自行选择。Retrofit2.6及以上版本提供了对协程的支持，使用起来更加方便.
+  封装了BaseActivity、BaseFragment、BaseViewModel基于协程的网络请求方式。Retrofit2.6及以上版本提供了对协程的支持，使用起来更加方便.
   增加了 Flow 的转换
 - **引入第三方库**
 
@@ -22,33 +26,30 @@
 
 ## 使用方式
 
-### 启用dataBinding
+### 启用viewBinding
 
 在主工程app的build.gradle的android {}中加入：
 
-``` groovy
+```groovy
     buildFeatures {
-        //dataBinding = true
         viewBinding = true
     }
 ```
 
 ### 依赖
 
+[![](https://jitpack.io/v/aleyn97/MVVMLin.svg)](https://jitpack.io/#aleyn97/MVVMLin)
+
 在主项目app的build.gradle中依赖
 
-``` groovy
+```groovy
 dependencies {
-    ...
-   implementation 'com.github.AleynP:MVVMLin:2.0.0'
+    //...
+   implementation 'com.github.AleynP:MVVMLin:lastversion'
 }
 ```
 
 或者 下载到本地导入Module
-
-#### 配置 buildSrc (1.0.6 版本改为 butkdSrc 方式构建)
-
-复制Demo的 buildSrc 到根目录,用Gradle 同步。AS会自动识别 buildSrc目录 (远程依赖可以忽略)
 
 #### 添加 FlowAdapter
 
@@ -65,60 +66,161 @@ dependencies {
 
 ### Activity
 
-继承BaseVMActivity
+1，继承BaseActivity
 
-``` kotlin
-class DetailActivity : 继承BaseVMActivity<NoViewModel, ViewBinding>() {
+```kotlin
+class DetailActivity : BaseActivity<ActivityDetailBinding>() {
 
-	override val layoutId() = R.layout.activity_detail
+    private val viewModel by viewModels<XXXViewModel>()
 
 	override fun initView(savedInstanceState: Bundle?) {
-       ....
+       //...
+       mBinding.tvTest.text = "123456"
     }
 
     override fun initData() {
-      ....
+      //....
     }
 }
 ```
 
-第一个泛型是ViewModel,如果页面很简单不需要ViewModel，可以继承BaseActivity。 第二个泛型是Databinding 或者
-ViewBinding
-的生成类，如果页面使用Databinding或者ViewBinding的话，就要传对应的Binding生成类，如果不使用DataBinding或者ViewBinding，传
-ViewBinding
-。基类不用初始化mBinding而会使用常规方式。
-** layoutId ** 方法返回对应布局。当使用ViewBinding时 不用重写此方法，其余都要重写 返回布局 Id
 **initView()** 和 **initData()** 为默认实现，做初始化UI等操作
+
+2，继承BaseVMActivity
+
+```kotlin
+class XXXActivity : BaseVmActivity<XXXViewModel,ActivityDetailBinding>() {
+
+	override fun initView(savedInstanceState: Bundle?) {
+       //...
+    }
+
+    override fun initData() {
+      //....
+    }
+}
+```
+
+不推荐继承 BaseVmActivity 此种方式，后续会移除掉
 
 ### Fragment
 
-继承BaseVMFragment
+1，继承BaseFragment
 
-``` kotlin
-class HomeFragment : 继承BaseVMFragment<HomeViewModel, ViewBinding>() {
+```kotlin
+class HomeFragment : BaseFragment<HomeFragmentBinding>() {
 
-		override fun layoutId() = R.layout.home_fragment
-		
-		override fun initView(savedInstanceState: Bundle?) {  }
+        private val viewModel by viewModels<HomeViewModel>()
+        
+        //private val mainViewModel by activityViewModels<HomeViewModel>() // Activity 共享
+        
+        //private val viewModel3 by viewModels<HomeViewModel>({ requireParentFragment() }) // 父Fragmeng共享
+
+		override fun initView(savedInstanceState: Bundle?) {
+		    //...
+           registerDefUIChange(viewModel)//绑定默认UI 事件(可选)
+		}
 		
 		override fun lazyLoadData() {
-			....
+			//....
 		}
 }
 ```
 
-实现方法同Activity一样，Fragment多了懒加载方法**lazyLoadData()** 可选择性重写。
+2，继承BaseVMFragment
+
+```kotlin
+class HomeFragment : BaseVmFragment<HomeViewModel,HomeFragmentBinding>() {
+
+		override fun initView(savedInstanceState: Bundle?) {
+		    //...
+		}
+		
+		override fun lazyLoadData() {
+			//...
+		}
+}
+```
+
+不推荐再使用这种写法，这种只适合页面简单只有一个ViewModel，如果有多个页面有多个viewModel,或者有共享
+viewModel。使用第1种
 
 ### ViewModel
 
 继承BaseViewModel
 
-``` kotlin
+```kotlin
 class HomeViewModel : BaseViewModel() {
-		.........
+
+  /**
+   * 示例
+   * 使用 MutableSharedFlow, MutableStateFlow。 或者 LiveData 都可以
+   
+   * MutableSharedFlow 只有目前存在观察都才会通知，没有缓存
+   * 
+   * MutableStateFlow 每次注册都会触发通知，是有缓存值在的，所以 MutableStateFlow 初始化是要给默认值的
+   * 
+   */
+  private val _banners = MutableSharedFlow<List<BannerBean>>()
+  val banners = _banners.asSharedFlow()
+
+  //private val _banners = MutableStateFlow<List<BannerBean>>(emptyList())
+  //val banners = _banners.asStateFlow()
+
+    init {
+      repository.getBannerData(refresh)
+        .asResponse()
+        .netCache {
+          //异常处理
+        }
+        .collect(_banners)
+    }
+  
+    //...
 }
 ```
 
+### 更新UI
+
+```kotlin
+class HomeFragment : BaseFragment<HomeFragmentBinding>() {
+
+    override fun initObserve() {
+        launch {
+          viewModel.banners
+                .flowWithLifecycle(viewLifecycleOwner.lifecycle)
+                .collect {
+                  // Update Banner UI
+                  // mBinding.banner.setList(it)
+                }
+        }
+      
+      /**
+       * 这种写法等同于上边 flowWithLifecycle 写法
+       */
+        flowLaunch {
+            viewModel.banners.collect {
+                // Update Banner UI
+                // mBinding.banner.setList(it)
+            }
+        }
+      
+      /**
+       * 可指定 state, 默认是 Lifecycle.State.STARTED
+       * 不同的 state 观察者移除的时机不同，根据业务场景自行选择
+       */
+      flowLaunch(state = Lifecycle.State.CREATED) {
+        viewModel.banners.collect {
+          // Update Banner UI
+          // mBinding.banner.setList(it)
+        }
+      }
+    }
+
+}
+```
+
+#### 异常设置
 在Application 中设置全局网络异常处理(可选)
 
 ```kotlin
@@ -131,23 +233,26 @@ MVVMLin.setNetException(CoroutineExceptionHandler { context, e ->
 
 **ViewModel** 中所有网络请求都写要 BaseViewModel 的 `launch` 作用域中，如下：
 
-#### Flow 方式(同 RxJava 相似)
+#### Flow 方式
 
-```
+```kotlin
 // Service 用 Flow 接收
 @GET("xxx/xxx")
-fun getBannerData(): Flow<BaseResult<XXX>>>
+fun getBannerData(): Flow<BaseResult<XXX>>
 ```
 
-``` kotlin
-class HomeViewModel : BaseViewModel() {
-    private val homeRepository by lazy { InjectorUtil.getHomeRepository() }
+```kotlin
+class XXXViewModel : BaseViewModel() {
+    
+    private val xxxRepository by lazy { InjectorUtil.getHomeRepository() }
+  
     private val _banners = MutableSharedFlow<List<BannerBean>>()
     val mBanners: SharedFlow<List<BannerBean>> = _banners
+  
     fun getBanner(refresh: Boolean = false) {
-        //只返回结果，其他全抛自定义异常
-        launch {
-            homeRepository.getBannerData(refresh)
+        //Flow 方式示例
+        launch { 
+          xxxRepository.getBannerData(refresh)
                 .asResponse()
                 .bindLoading(this@HomeViewModel)//绑定Lodaing
                 .collect(_banners)
@@ -167,22 +272,25 @@ class HomeViewModel : BaseViewModel() {
 
 #### 普通方式(不使用Flow)
 
-注意不使用Flow时， Service 返回值直接用基类,并添加上 `suspend`
+注意不使用 Flow 时， Service 返回值直接用基类,并添加上 `suspend`
 
-```
+```kotlin
 @GET("xxx/xxx")
 suspend fun getBannerData(): BaseResult<XXX>
 ```
 
-```
+```kotlin
 class ProjectViewModel : BaseViewModel() {
+
+    private val _projectList = MutableStateFlow<List<XXX>>(emptyList())
+    val projectList = _project.asStateFlow()
+
     fun getProjectList(cid: Int) {
         launch {
-            homeRepository.getProjectList(page, cid).getOrThrow()
-            .let {
-                items.clear()
-                items.addAll(it.datas)
-            }
+            //普通方式示例
+            val list = homeRepository.getProjectList(page, cid).getOrThrow()
+            //val list = homeRepository.getProjectList(page, cid).check() //不关心返回值
+            _projectList.update { list }// Update UI
         }
     }
 }
@@ -197,9 +305,9 @@ class ProjectViewModel : BaseViewModel() {
 
 #### IBaseResponse
 
-由于请求中依赖了数据基类，我们每个项目的基类字段都不相同，所以我们根据后台的字段定义完基类以后，要实现IBaseResponde接口,如下：
+由于请求中依赖了数据基类，我们每个项目的基类字段都不相同，所以我们根据后台的字段定义完基类以后，要实现IBaseResponse接口,如下：
 
-```
+```kotlin
 data class BaseResult<T>(
     val errorMsg: String,
     val errorCode: Int,
@@ -216,26 +324,10 @@ data class BaseResult<T>(
 }
 ```
 
-来保证过滤请求结果的正常使用
-
-### 例子
-
-Demo中只展示了三种列表使用方式
-
-#### 不使用Databinging,结合[BRVAH](https://github.com/CymChad/BaseRecyclerViewAdapterHelper)
-
-详见Demo的 **HomeFragment**
-
-#### 使用Databinging,结合[bindingcollectionadapter](https://github.com/evant/binding-collection-adapter)
-
-结合bindingcollectionadapter不用写Adapter适配器了，详见Demo的 **ProjectFragment**
-
-#### 使用Databinging,结合[BRVAH](https://github.com/evant/binding-collection-adapter)
-
-[BRVAH](https://github.com/CymChad/BaseRecyclerViewAdapterHelper)
-对DataBinding也做了支持，详见Demo的 **
-MeFragment**
-
 ## 最后
+
+这个框架是 19 年底开始搞的，那时候协程刚出来大家都不熟悉，以及 Jetpack 相关的东西。最初目的也是给大家提供一个参考方式，如何入门使用。如今 2025 年了，回过头来再看这些东西，会感觉这些已经是很基础的了。
+所以这套东西，比较适合一些快速开发的小项目使用。如果满足不了使用需求的话，大家稍微动下手，自己封装下，只当做一个参考就可以了。
+
 
 QQ群：(791382057)
