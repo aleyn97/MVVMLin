@@ -45,7 +45,7 @@ Compose 出来了，就不再对 DataBinding 投入太多工夫了
 ```groovy
 dependencies {
     //...
-   implementation 'com.github.AleynP:MVVMLin:lastversion'
+   implementation 'com.github.aleyn97:MVVMLin:lastVersion'
 }
 ```
 
